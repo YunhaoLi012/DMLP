@@ -80,7 +80,24 @@ class Tokenizer:
     def __init__(self, tokenizer) -> None:
         self.tokenizer = tokenizer
 
-    def tokenize(self, dataset):
+    def tokenize(self, container):
         """
         dataset should be a DataContainer object
+        TODO: Alternatively, can we just ask the user to pass in a file path instead of a container?
         """
+        text=1
+        small_instance_list = []
+        while text!=0:
+            text = next(container,0)
+            if text!=0:
+                context = text['context']
+                question = text['question']
+                answer = text['answer']
+                tokenized_context = self.tokenizer(context,padding="max_length", truncation=True,max_length=16)
+                tokenized_question = self.tokenizer(question, padding = 'max_length',truncation = True, max_length = 16)
+                tokenized_answer = self.tokenizer(answer, padding='max_length', truncation=True, max_length = 16)
+                ### Check the tokenized output first, this is not a single array.
+                small_instance(context,question,answer,tokenized_context,tokenized_question,tokenized_answer)
+                small_instance_list.append(small_instance)
+
+        return small_instance_list
