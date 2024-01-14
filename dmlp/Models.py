@@ -37,7 +37,7 @@ def reparameterize(mu, logvar, nsamples=1):
 class VAE(nn.Module):
     """VAE with normal prior"""
 
-    def __init__(self, encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=None): 
+    def __init__(self, encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=None, **kargs): 
         """
         encoder: encoding model like BERT
         decoder: decoding model like GPT2
