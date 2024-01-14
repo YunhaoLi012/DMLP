@@ -8,7 +8,7 @@ from collections import defaultdict
 
 
 
-def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader,ns=1, device, disable_bar):
+def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader, device, disable_bar, ns=1):
 
     # eval_dataloader = build_dataload_and_cache_examples(args, [encoder_tokenizer, decoder_tokenizer], evaluate=True)
     count = 0
