@@ -666,14 +666,14 @@ class VAE(nn.Module):
 
     #     return mi
 
-    def calc_au(self, eval_dataloader, args, delta=0.01):
+    def calc_au(self, eval_dataloader, delta=0.01):
         """compute the number of active units
         """
         cnt = 0
         for batch_data in eval_dataloader:
 
             x0, _, _ = batch_data
-            x0 = x0.to(args.device)
+            x0 = x0.to(self.device)
 
             # encoding into bert features
             bert_fea = self.encoder(x0)[1]
@@ -694,7 +694,7 @@ class VAE(nn.Module):
         for batch_data in eval_dataloader:
 
             x0, _, _ = batch_data
-            x0 = x0.to(args.device)
+            x0 = x0.to(self.device)
 
             # encoding into bert features
             bert_fea = self.encoder(x0)[1]

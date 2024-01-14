@@ -1,4 +1,5 @@
 import json
+import torch
 
 
 
@@ -103,7 +104,7 @@ class Tokenizer:
         return small_instance_list
 
 # For vae.py
-import torch
+
 def log_sum_exp(value, dim=None, keepdim=False):
     """Numerically stable implementation of the operation
     value.exp().sum(dim, keepdim).log()
