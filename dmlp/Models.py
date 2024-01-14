@@ -369,10 +369,10 @@ class VAE(nn.Module):
             x1 = torch.zeros_like(x1)
             rec = 'sample'
         decoded_batch = self.decode_eval_greedy(x1, z)
-        with open('/home/lptang/Optimus/samples/' + self.output_dir.split('/')[-1] + '.' + str(
-                self.args.gloabl_step_eval) + '.' + rec, 'a+') as f:
-            for sent in decoded_batch:
-                f.write(sent + '\n')
+        # with open('/home/lptang/Optimus/samples/' + self.output_dir.split('/')[-1] + '.' + str(
+        #         self.args.gloabl_step_eval) + '.' + rec, 'a+') as f:
+        #     for sent in decoded_batch:
+        #         f.write(sent + '\n')
 
     def nll_iw(self, x0, x1, nsamples, ns=1):
         """compute the importance weighting estimate of the log-likelihood
