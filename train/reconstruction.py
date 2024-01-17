@@ -1,8 +1,8 @@
 import torch
-import tqdm
 from nltk.translate.bleu_score import corpus_bleu
-from modules import sample_sequence_conditional
+from modules.sample import sample_sequence_conditional
 from collections import defaultdict
+from tqdm import tqdm
 
 
 

@@ -893,3 +893,18 @@ class AlbertForLatentConnector(AlbertModel, ABC):
 #             # pooled_out_final = self.pooler(encoder_layer)
 #             return outputs[0], pooled_out_final, None
 #         return outputs[0], attention_mask
+MODEL_CLASS = {'BertForLatentConnector':BertForLatentConnector,
+               'BertForLatentConnectorAVG':BertForLatentConnectorAVG,
+               'BertForLatentConnectorNew':BertForLatentConnectorNew,
+               'RobertaForLatentConnector':RobertaForLatentConnector,
+               'RobertaForLatentConnectorNew':RobertaForLatentConnectorNew,
+               'DebertaForLatentConnector':DebertaForLatentConnector,
+               'DebertaForLatentConnectorNew':DebertaForLatentConnectorNew,
+               'T5EncoderForLatentConnector':T5EncoderForLatentConnector,
+               'GPT2ModelForVAE':GPT2ModelForVAE,
+               'GPT2ForLatentConnector':GPT2ForLatentConnector,
+               'GPT2ModelForVAENew':GPT2ModelForVAENew,
+               'GPT2ForLatentConnectorNew':GPT2ForLatentConnectorNew,
+               'GPT2ModelForVAENew2':GPT2ModelForVAENew2,
+               'GPT2ForLatentConnectorNew2':GPT2ForLatentConnectorNew2,
+               'AlbertForLatentConnector':AlbertForLatentConnector}
