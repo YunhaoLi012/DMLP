@@ -17,6 +17,7 @@ def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader
     cand = []
     for batch in tqdm(eval_dataloader, desc="Evaluating recontruction", disable=disable_bar):
         x0, x1, x_lengths = batch
+
         max_len_values, _ = x_lengths.max(0)
         x0 = x0[:, :max_len_values[0]]
         x1 = x1[:, :max_len_values[1]]
@@ -24,6 +25,7 @@ def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader
         x1 = x1.to(device)
         x_lengths = x_lengths.to(device)
         context_tokens = decoder_tokenizer.encode(decoder_tokenizer.bos_token)
+
         with torch.no_grad():
             # text_x0 = encoder_tokenizer.decode(x0[0,:x_lengths[0,0]].tolist(), clean_up_tokenization_spaces=True)[0]
             # result["INPUT TEXT " + str(count)].append(text_x0)
@@ -70,3 +72,4 @@ def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader
     # with open(output_eval_file, "w") as writer:
     #     writer.write("%s = %s\n" % ('bleu', str(bleu)))
     return {'bleu': bleu}
+
