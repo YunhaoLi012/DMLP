@@ -1,4 +1,6 @@
 import torch
+import torch.nn.init as init
+
 def log_sum_exp(value, dim=None, keepdim=False):
     """Numerically stable implementation of the operation
     value.exp().sum(dim, keepdim).log()

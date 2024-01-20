@@ -1,6 +1,6 @@
 import torch
 from nltk.translate.bleu_score import corpus_bleu
-from modules.sample import sample_sequence_conditional
+from functions import sample_sequence_conditional
 from collections import defaultdict
 from tqdm import tqdm
 
@@ -12,7 +12,7 @@ def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader
 
     # eval_dataloader = build_dataload_and_cache_examples(args, [encoder_tokenizer, decoder_tokenizer], evaluate=True)
     count = 0
-    result = defaultdict(str)
+
     ref = []
     cand = []
     for batch in tqdm(eval_dataloader, desc="Evaluating recontruction", disable=disable_bar):

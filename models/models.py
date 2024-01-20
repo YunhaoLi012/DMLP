@@ -896,40 +896,40 @@ class DDPM(nn.Module):
         
         return loss,self.loss_weight[_ts, None]
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Makes forward diffusion x_t, and tries to guess epsilon value from x_t using eps_model.
-        This implements Algorithm 1 in the paper.
-        """
+    # def forward(self, x: torch.Tensor) -> torch.Tensor:
+    #     """
+    #     Makes forward diffusion x_t, and tries to guess epsilon value from x_t using eps_model.
+    #     This implements Algorithm 1 in the paper.
+    #     """
 
-        _ts = torch.randint(1, self.n_T+1, (x.shape[0],)).to(
-            x.device
-        )  # t ~ Uniform(0, n_T)
-        eps = torch.randn_like(x)  # eps ~ N(0, 1)
-        x_t = (
-            self.sqrtab[_ts, None] * x
-            + self.sqrtmab[_ts, None] * eps
-        )  # This is the x_t, which is sqrt(alphabar) x_0 + sqrt(1-alphabar) * eps
-        # We should predict the "error term" from this x_t. Loss is what we return.
-        return self.criterion(eps, self.eps_model(x_t, _ts / self.n_T))
+    #     _ts = torch.randint(1, self.n_T+1, (x.shape[0],)).to(
+    #         x.device
+    #     )  # t ~ Uniform(0, n_T)
+    #     eps = torch.randn_like(x)  # eps ~ N(0, 1)
+    #     x_t = (
+    #         self.sqrtab[_ts, None] * x
+    #         + self.sqrtmab[_ts, None] * eps
+    #     )  # This is the x_t, which is sqrt(alphabar) x_0 + sqrt(1-alphabar) * eps
+    #     # We should predict the "error term" from this x_t. Loss is what we return.
+    #     return self.criterion(eps, self.eps_model(x_t, _ts / self.n_T))
 
 
-    def forward_dae(self, x: torch.Tensor, z_sem) -> torch.Tensor:
-        """
-        Makes forward diffusion x_t, and tries to guess epsilon value from x_t using eps_model.
-        This implements Algorithm 1 in the paper.
-        """
+    # def forward_dae(self, x: torch.Tensor, z_sem) -> torch.Tensor:
+    #     """
+    #     Makes forward diffusion x_t, and tries to guess epsilon value from x_t using eps_model.
+    #     This implements Algorithm 1 in the paper.
+    #     """
 
-        _ts = torch.randint(1, self.n_T+1, (x.shape[0],)).to(
-            x.device
-        )  # t ~ Uniform(0, n_T)
-        eps = torch.randn_like(x)  # eps ~ N(0, 1)
-        x_t = (
-            self.sqrtab[_ts, None] * x
-            + self.sqrtmab[_ts, None] * eps
-        )  # This is the x_t, which is sqrt(alphabar) x_0 + sqrt(1-alphabar) * eps
-        # We should predict the "error term" from this x_t. Loss is what we return.
-        return self.criterion(eps, self.eps_model(x_t, _ts / self.n_T, self.eps_model.dae_mlp(z_sem)))
+    #     _ts = torch.randint(1, self.n_T+1, (x.shape[0],)).to(
+    #         x.device
+    #     )  # t ~ Uniform(0, n_T)
+    #     eps = torch.randn_like(x)  # eps ~ N(0, 1)
+    #     x_t = (
+    #         self.sqrtab[_ts, None] * x
+    #         + self.sqrtmab[_ts, None] * eps
+    #     )  # This is the x_t, which is sqrt(alphabar) x_0 + sqrt(1-alphabar) * eps
+    #     # We should predict the "error term" from this x_t. Loss is what we return.
+    #     return self.criterion(eps, self.eps_model(x_t, _ts / self.n_T, self.eps_model.dae_mlp(z_sem)))
 
     def add_noise(self, x_i: torch.Tensor, T=None) -> torch.Tensor:
         """
@@ -1414,3 +1414,21 @@ class MLPLNAct(nn.Module):
         x = self.act(x)
         x = self.dropout(x)
         return x
+
+class VAE_DDPM(nn.Module):
+    def __init__(self, model_vae, ddpm, ddpm_weight) :
+        super(VAE_DDPM, self).__init__()
+        self.model_vae = model_vae
+        self.ddpm = ddpm
+        self.ddpm_weight = ddpm_weight
+
+    def forward(self,inputs, labels, std=False, return_z=False, return_mu=False): 
+        
+        loss_rec, loss_kl, loss, latent_z, mu = self.model_vae(inputs, labels, std=std, return_z=return_z, return_mu=return_mu)
+        ddpm_loss, loss_weight = self.ddpm.forward_new(latent_z, mu)
+        
+        if self.ddpm_weight > 0:
+            loss = (1/(loss_weight * self.ddpm.nt)  * loss).mean() + self.ddpm_weight *ddpm_loss.mean()
+        else:
+            loss = loss.mean() + 0.0* ddpm_loss.mean()
+        return loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight
