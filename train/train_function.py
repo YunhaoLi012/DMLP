@@ -6,7 +6,7 @@ from tqdm import tqdm, trange
 import apex
 from apex import amp
 import logging
-from train import *
+from .reconstruction import *
 from functions import *
 
 

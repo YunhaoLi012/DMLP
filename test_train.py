@@ -70,7 +70,7 @@ def main():
 
     print("start_training")
     train_vae_ddpm(model, eval_dataloader, tokenizer_encoder, tokenizer_decoder, eval_dataloader, output_dir, condition_f=lambda x: False,
-          checkpoint=None, local_rank = 6, batch_size = 32, eval_batch_size = 64,
+          checkpoint=None, local_rank = -1, batch_size = 32, eval_batch_size = 64,
           train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
