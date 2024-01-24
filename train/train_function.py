@@ -12,7 +12,7 @@ from functions import *
 
 def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer, 
            eval_dataloader, output_dir, condition_f=lambda x: False,
-          checkpoint=None, local_rank = -1, batch_size = 32, eval_batch_size = 32,
+          checkpoint=None, local_rank = -1, logging_steps = -1, batch_size = 32, eval_batch_size = 32,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 

@@ -1428,7 +1428,7 @@ class VAE_DDPM(nn.Module):
         ddpm_loss, loss_weight = self.ddpm.forward_new(latent_z, mu)
         
         if self.ddpm_weight > 0:
-            loss = (1/(loss_weight * self.ddpm.nt)  * loss).mean() + self.ddpm_weight *ddpm_loss.mean()
+            loss = (1/(loss_weight * self.ddpm.n_T)  * loss).mean() + self.ddpm_weight *ddpm_loss.mean()
         else:
             loss = loss.mean() + 0.0* ddpm_loss.mean()
         return loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight

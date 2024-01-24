@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 import torch
 
+
 from models.my_transformers import *
 from models.models import VAE, DDPM, MLPSkipNet, TransformerNet,VAE_DDPM
 from train.reconstruction import *
@@ -53,6 +54,8 @@ def main():
     special_tokens_dict = {'pad_token': '<PAD>', 'bos_token': '<BOS>', 'eos_token': '<EOS>', }
     num_added_toks = tokenizer_decoder.add_special_tokens(special_tokens_dict)
     model_decoder.resize_token_embeddings(len(tokenizer_decoder))
+    global bert_pad_token
+    global gpt2_pad_token
     bert_pad_token = tokenizer_encoder.pad_token_id
     gpt2_pad_token = tokenizer_decoder.pad_token_id
 
@@ -74,3 +77,10 @@ def main():
           disable_bar=True, model_ppl=None, tokenizer_ppl=None, max_grad_norm=1, evaluate_during_training=False,
           no_save=True)
     print("training_done")
+
+
+print("here")
+
+
+if __name__ == "__main__":
+    main()
