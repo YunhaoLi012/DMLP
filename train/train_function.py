@@ -6,18 +6,16 @@ from tqdm import tqdm, trange
 import apex
 from apex import amp
 import logging
-from accelerate.utils import set_seed
-from reconstruction import *
-from generation import *
-from functions import save_checkpoint
+from train import *
+from functions import *
 
 
 def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer, 
-          table_name, eval_dataloader, output_dir, condition_f=lambda x: False,
+           eval_dataloader, output_dir, condition_f=lambda x: False,
           checkpoint=None, local_rank = -1, batch_size = 32, eval_batch_size = 32,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
-          lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, random_state=False, seed=44,
+          lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
           disable_bar=True, model_ppl=None, tokenizer_ppl=None, max_grad_norm=1, evaluate_during_training=False,
           no_save=True):
     """ Train the model 
@@ -71,8 +69,9 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
 
     # Distributed training (should be after apex fp16 initialization)
     
-    # if args.local_rank != -1:
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[local_rank],
+    torch.distributed.init_process_group(backend='nccl',init_method='env://')
+    if local_rank != -1:
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[local_rank],
                                                           output_device=local_rank,
                                                           )
 
@@ -97,8 +96,6 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
     #                                         'module') else model  # Take care of distributed/parallel training
     
     train_iterator = trange(int(train_epoch), desc="Epoch", disable=disable_bar)
-    if random_state:
-        set_seed(seed)
     model.eval()
     if local_rank==0:
         with torch.no_grad():
