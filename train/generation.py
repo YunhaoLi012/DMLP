@@ -3,9 +3,8 @@ from functions import sample_sequence_conditional
 from tqdm import tqdm, trange
 import numpy as np
 
-def calc_ppl_lgy_ddpm(model_vae, encoder_tokenizer, decoder_tokenizer, ns=1, 
-                      ddpm=None, device='cpu', sent_length=20, model_ppl=None, tokenizer_ppl=None, 
-                      z=None, total_step=None, disable_bar=True, fp16=False):
+def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, 
+                      ddpm=None, device='cpu', output_dir = "output.txt", disable_bar=True, fp16=False):
     generate_text = []
     bz = 100
     num_epoch = ns
@@ -37,7 +36,7 @@ def calc_ppl_lgy_ddpm(model_vae, encoder_tokenizer, decoder_tokenizer, ns=1,
             text_x1 = ' '.join(text_x1.split())
             generate_text.append(text_x1 + '\n')
 
-    with open('out_gene.txt','w') as f:
+    with open(output_dir,'w') as f:
         f.write(''.join(generate_text))
     # encodings = tokenizer_ppl('\n\n'.join(generate_text), return_tensors='pt')
     # max_length = model_ppl.config.n_positions

@@ -21,7 +21,7 @@ def sample_sequence_conditional(model, length, context, past=None, num_samples=1
             generated = torch.cat((generated, next_token), dim=1)
             tmp = (next_token.squeeze() == eos_id)
             if ii == 0:
-                tmp22 = torch.zeros_like(tmp, device='cuda')
+                tmp22 = torch.zeros_like(tmp, device=device)
             tmp22 = torch.logical_or(tmp22, tmp)
             if False not in tmp22:
                 break
