@@ -27,7 +27,7 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
     """
     logger = logging.getLogger(__name__)
 
-    torch.cuda.set_device(local_rank)
+    torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     torch.cuda.empty_cache()
 
     if local_rank in [-1, 0]:
@@ -216,6 +216,7 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
                             best_bleu = results['bleu']
                             if not no_save:
                                 save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, local_rank, logger, ppl=True, ddpm=model.ddpm)
+                        # to test after ppl re-established
                         if 12 < results_new['ppl'] < best_ppl and results_new['norm_z'] < 12 and global_step > 2 * logging_steps:
                             best_ppl = results_new['ppl']
                             if not no_save:
