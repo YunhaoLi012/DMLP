@@ -7,12 +7,13 @@ import apex
 from apex import amp
 import logging
 from .reconstruction import *
+from .generation import *
 from functions import *
 
 
 def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer, 
            eval_dataloader, output_dir, condition_f=lambda x: False,
-          checkpoint=None, local_rank = -1, logging_steps = -1, batch_size = 32, eval_batch_size = 32,
+          checkpoint=None, local_rank = 0, logging_steps = -1, batch_size = 32, eval_batch_size = 32,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
@@ -70,8 +71,8 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
     # Distributed training (should be after apex fp16 initialization)
     
     torch.distributed.init_process_group(backend='nccl',init_method='env://')
-    if local_rank != -1:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[local_rank],
+    # if local_rank != -1:
+    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[local_rank],
                                                           output_device=local_rank,
                                                           )
 
@@ -99,14 +100,15 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
     model.eval()
     if local_rank==0:
         with torch.no_grad():
-            result_new = calc_rec_lgy(model.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
+            result_new = calc_rec_lgy(model.module.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
             # result_new.update(evaluate(args, model.module.model_vae, encoder_tokenizer, decoder_tokenizer, table_name,eval_dataloader))
             for key, value in result_new.items():
                 logger.info('eval_%s:%f',key,value)
                 tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
             results_new = calc_ppl_lgy_ddpm(
-                            model.model_vae, encoder_tokenizer, decoder_tokenizer, ns=1,
-                            ddpm=model.ddpm, model_ppl=model_ppl, tokenizer_ppl=tokenizer_ppl, fp16=fp16
+                            model.module.model_vae, encoder_tokenizer, decoder_tokenizer, ns=1,
+                            ddpm=model.module.ddpm, model_ppl=model_ppl, tokenizer_ppl=tokenizer_ppl, fp16=fp16,
+                            device=device
                         )
             for key, value in result_new.items():
                 logger.info('eval_%s:%f',key,value)
@@ -194,14 +196,15 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
                             #                         args.per_gpu_eval_batch_size = args.per_gpu_eval_batch_size // 2
                             model.eval()
                             with torch.no_grad():
-                                results_new = calc_ppl_lgy_ddpm(
-                                    model.model_vae, encoder_tokenizer, decoder_tokenizer, ns=1,
-                                    ddpm=model.ddpm, model_ppl=model_ppl, tokenizer_ppl=tokenizer_ppl, fp16=fp16
-                                )
+                                # results_new = calc_ppl_lgy_ddpm(
+                                #     model.module.model_vae, encoder_tokenizer, decoder_tokenizer, ns=1,
+                                #     ddpm=model.module.ddpm, model_ppl=model_ppl, tokenizer_ppl=tokenizer_ppl, fp16=fp16,
+                                #     device=device
+                                # )
                                 for key, value in results_new.items():
                                     logger.info("DDPM_"+key+": %s",str(results_new[key]))
                                     tb_writer.add_scalar('eval_{}'.format("DDPM_"+key), value, global_step)
-                                results = calc_rec_lgy(model.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
+                                results = calc_rec_lgy(model.module.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
 
                             for key, value in results.items():
                                 tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
@@ -212,17 +215,17 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
                         if results['bleu'] >= best_bleu:
                             best_bleu = results['bleu']
                             if not no_save:
-                                save_checkpoint(model.model_vae, optimizer, global_step, parameter_name, output_dir, local_rank, logger, ppl=True, ddpm=model.ddpm)
+                                save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, local_rank, logger, ppl=True, ddpm=model.ddpm)
                         if 12 < results_new['ppl'] < best_ppl and results_new['norm_z'] < 12 and global_step > 2 * logging_steps:
                             best_ppl = results_new['ppl']
                             if not no_save:
                                 tb_writer.add_scalar('eval_best_ppl', best_ppl, global_step)
                                 tb_writer.add_scalar('eval_best_bleu', results['bleu'], global_step)
-                                save_checkpoint(model.model_vae, optimizer, global_step, parameter_name, output_dir, local_rank, logger, ppl=True, ddpm=model.ddpm)
+                                save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, local_rank, logger, ppl=True, ddpm=model.ddpm)
                         logger.info("Current Path is %s", output_dir)
                     torch.distributed.barrier()
 
-    results = calc_rec_lgy(model.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
+    results = calc_rec_lgy(model.module.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
 
     if local_rank in [-1, 0]:
         tb_writer.close()
