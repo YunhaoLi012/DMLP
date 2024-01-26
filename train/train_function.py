@@ -106,8 +106,8 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
                 logger.info('eval_%s:%f',key,value)
                 tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
             results_new = calc_ppl_lgy_ddpm(
-                            model.module.model_vae, encoder_tokenizer, decoder_tokenizer, ns=1,
-                            ddpm=model.module.ddpm, model_ppl=model_ppl, tokenizer_ppl=tokenizer_ppl, fp16=fp16,
+                            model.module.model_vae, decoder_tokenizer, ns=1,
+                            ddpm=model.module.ddpm, fp16=fp16,
                             device=device
                         )
             for key, value in result_new.items():
@@ -196,11 +196,11 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
                             #                         args.per_gpu_eval_batch_size = args.per_gpu_eval_batch_size // 2
                             model.eval()
                             with torch.no_grad():
-                                # results_new = calc_ppl_lgy_ddpm(
-                                #     model.module.model_vae, encoder_tokenizer, decoder_tokenizer, ns=1,
-                                #     ddpm=model.module.ddpm, model_ppl=model_ppl, tokenizer_ppl=tokenizer_ppl, fp16=fp16,
-                                #     device=device
-                                # )
+                                results_new = calc_ppl_lgy_ddpm(
+                                    model.module.model_vae, decoder_tokenizer, ns=1,
+                                    ddpm=model.module.ddpm, fp16=fp16,
+                                    device=device
+                                )
                                 for key, value in results_new.items():
                                     logger.info("DDPM_"+key+": %s",str(results_new[key]))
                                     tb_writer.add_scalar('eval_{}'.format("DDPM_"+key), value, global_step)
