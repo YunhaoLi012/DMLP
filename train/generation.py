@@ -3,7 +3,7 @@ from functions import sample_sequence_conditional
 from tqdm import tqdm, trange
 import numpy as np
 
-def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, 
+def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
                       ddpm=None, device='cpu', output_dir = "output.txt", disable_bar=True, fp16=False):
     generate_text = []
     bz = 100
@@ -19,7 +19,7 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1,
                 model=model_vae.decoder,
                 context=context_tokens,
                 past=latent_z,
-                length=32,
+                length=sent_length,
                 num_samples=latent_z.size(0),
                 device=device,
                 decoder_tokenizer=decoder_tokenizer,
@@ -38,6 +38,7 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1,
 
     with open(output_dir,'w') as f:
         f.write(''.join(generate_text))
+
     # encodings = tokenizer_ppl('\n\n'.join(generate_text), return_tensors='pt')
     # max_length = model_ppl.config.n_positions
     # stride = 512
@@ -57,6 +58,7 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1,
 
     #     nlls.append(neg_log_likelihood)
     # ppl = torch.exp(torch.stack(nlls).sum() / end_loc)
+
     list_of_references = []
     len_list = []
     for jj, line in enumerate(generate_text):

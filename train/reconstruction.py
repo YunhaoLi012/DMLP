@@ -4,13 +4,8 @@ from functions import sample_sequence_conditional
 from collections import defaultdict
 from tqdm import tqdm
 
+def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader, device, disable_bar):
 
-
-
-
-def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader, device, disable_bar, ns=1):
-
-    # eval_dataloader = build_dataload_and_cache_examples(args, [encoder_tokenizer, decoder_tokenizer], evaluate=True)
     count = 0
 
     ref = []
@@ -27,16 +22,12 @@ def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader
         context_tokens = decoder_tokenizer.encode(decoder_tokenizer.bos_token)
 
         with torch.no_grad():
-            # text_x0 = encoder_tokenizer.decode(x0[0,:x_lengths[0,0]].tolist(), clean_up_tokenization_spaces=True)[0]
-            # result["INPUT TEXT " + str(count)].append(text_x0)
             attention_mask = (x0 != encoder_tokenizer.pad_token_id).float()
 
             pooled_hidden_fea = model_vae.encoder(x0, attention_mask)[1]
 
-            # Connect hidden feature to the latent space
-            # latent_z, loss_kl = model_vae.connect(pooled_hidden_fea)
             mean, logvar = model_vae.encoder.linear(pooled_hidden_fea).chunk(2, -1)
-            # latent_z = model_vae.reparameterize(mean, logvar, nsamples=1).squeeze(1)
+
             latent_z = mean.squeeze(1)
 
             past = latent_z
@@ -66,10 +57,5 @@ def calc_rec_lgy(model_vae, encoder_tokenizer, decoder_tokenizer,eval_dataloader
         if count > 1000:
             break
     bleu = corpus_bleu(ref, cand) * 100
-    # output_eval_file = os.path.join(args.output_dir, "eval_results_bleu.txt")
-    # if not os.path.exists(args.output_dir):
-    #     os.makedirs(args.output_dir)
-    # with open(output_eval_file, "w") as writer:
-    #     writer.write("%s = %s\n" % ('bleu', str(bleu)))
     return {'bleu': bleu}
 
