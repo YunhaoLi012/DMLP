@@ -13,14 +13,14 @@ https://nvidia.github.io/apex/optimizers.html
 
 3. Abstract models: \
 abstract VAE \
-constructor, \
+constructor \
 forward \
 abstract DDPM \
 constructor \
 forward \
 sample \
 (in evaluation additonal sample options should be enabled) \
-abstract VAE_DDPM \ 
+abstract VAE_DDPM \
 constructor \
 forward
 
