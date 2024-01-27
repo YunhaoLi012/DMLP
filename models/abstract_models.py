@@ -5,6 +5,7 @@ class VAE_Abs(ABC, nn.Module):
 
     @abstractmethod
     def __init__(self, encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=None):
+        super(VAE_Abs, self).__init__()
         pass
 
     @abstractmethod
@@ -15,6 +16,7 @@ class DDPM_Abs(ABC, nn.Module):
 
     @abstractmethod
     def __init__(self, eps_model, betas, n_T, criterion, ddpm_schedule):
+        super(DDPM_Abs, self).__init__()
         pass
 
     @abstractmethod
@@ -29,6 +31,7 @@ class VAE_DDPM_Abs(ABC, nn.Module):
 
     @abstractmethod
     def __init__(self, model_vae, ddpm, ddpm_weight):
+        super(VAE_DDPM_Abs, self).__init__()
         pass
     
     @abstractmethod

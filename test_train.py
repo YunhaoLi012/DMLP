@@ -8,8 +8,9 @@ import torch
 from models.my_transformers import *
 from models.models import VAE, DDPM, MLPSkipNet, TransformerNet,VAE_DDPM
 from train.reconstruction import *
-from functions import weights_init_rondom
+from functions import weights_init_rondom, ddpm_schedule
 from train import *
+
 
 class MyCollator(object):
     def __init__(self, encoder_token, decoder_token):
@@ -65,18 +66,16 @@ def main():
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     model_vae.apply(weights_init_rondom)
     # model_vae.to('cuda')   
-    ddpm = DDPM(eps_model=MLPSkipNet(latent_size), betas=(1e-4, 0.02), n_T=1000, criterion=nn.MSELoss(reduction='none'),)
+    ddpm = DDPM(MLPSkipNet(latent_size), (1e-4, 0.02), 1000, nn.MSELoss(reduction='none'), ddpm_schedule)
     ddpm.apply(weights_init_rondom)
     model = VAE_DDPM(model_vae, ddpm,1.0 )
 
     print("start_training")
-    # train_vae_ddpm(model, eval_dataloader, tokenizer_encoder, tokenizer_decoder, eval_dataloader, output_dir, condition_f=lambda x: False,
-    #       checkpoint=None, local_rank = 0, batch_size = 2, eval_batch_size = 64,
-    #       train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda',
-    #       fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
-    #       lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-    #       disable_bar=True, model_ppl=None, tokenizer_ppl=None, max_grad_norm=1, evaluate_during_training=False,
-    #       no_save=True)
+    train_vae_ddpm(model, eval_dataloader, output_dir, condition_f=lambda x: False,
+          local_rank = 0, train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda',
+          fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
+          lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
+          disable_bar=True, max_grad_norm=1)
     print("training_done")
 
 

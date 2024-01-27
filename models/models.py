@@ -8,11 +8,11 @@ from .utils import log_sum_exp
 import numpy as np
 import logging
 from typing import Dict, Tuple
-from abstract_models import *
+from .abstract_models import *
 
 class VAE(VAE_Abs):
     def __init__(self, encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=None):
-        super(VAE, self).__init__()
+        super(VAE, self).__init__(encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=device)
         self.encoder = encoder
         self.decoder = decoder
         self.nz = latent_size
@@ -72,7 +72,7 @@ class VAE(VAE_Abs):
 class DDPM(DDPM_Abs):
 
     def __init__(self, eps_model, betas, n_T, criterion, ddpm_schedule):
-        super(DDPM, self).__init__()
+        super(DDPM, self).__init__(eps_model, betas, n_T, criterion, ddpm_schedule)
         self.eps_model = eps_model
 
         # register_buffer allows us to freely access these tensors by name. It helps device placement.
@@ -120,7 +120,7 @@ class DDPM(DDPM_Abs):
 
 class VAE_DDPM(VAE_DDPM_Abs):
     def __init__(self, model_vae, ddpm, ddpm_weight) :
-        super(VAE_DDPM, self).__init__()
+        super(VAE_DDPM, self).__init__(model_vae, ddpm, ddpm_weight)
         self.model_vae = model_vae
         self.ddpm = ddpm
         self.ddpm_weight = ddpm_weight
