@@ -13,11 +13,11 @@ from functions import *
 
 def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer, 
            eval_dataloader, output_dir, condition_f=lambda x: False,
-          checkpoint=None, local_rank = 0, logging_steps = -1,
+          checkpoint=None, local_rank = 0, logging_steps = -1, batch_size = 32, eval_batch_size = 32,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-          disable_bar=True, max_grad_norm=1, evaluate_during_training=False,
+          disable_bar=True, model_ppl=None, tokenizer_ppl=None, max_grad_norm=1, evaluate_during_training=False,
           no_save=True):
     """ Train the model 
     condition_f: a function for linear warmup and decay
@@ -25,14 +25,25 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
     model_ppl and tokenizer_ppl are required
     no_save: False if you want to save checkpoint
     """
+    logger = logging.getLogger(__name__)
+
     torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     torch.cuda.empty_cache()
 
     if local_rank in [-1, 0]:
         tb_writer = SummaryWriter('./runs/' + output_dir)
 
+    train_batch_size = batch_size
     t_total = len(train_dataloader) // gradient_accumulation_steps * train_epoch
-   
+    # Prepare optimizer and schedule (linear warmup and decay)
+    # if args.fix_model == 84:
+    #     def condition_f(n):
+    #         return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
+    
+    # elif args.fix_model == 841:
+    #     def condition_f(n):
+    #         return ('linear' in n or 'lora' in n or 'encoder' in n)
+    # model_encoder, model_decoder, model_connector = model_vae.encoder,  model_vae.decoder, model_vae.linear
     model = model.to(device)
     para = [p for n, p in model.model_vae.named_parameters() if condition_f(n)]
     if model.ddpm_weight > 0:
@@ -46,6 +57,7 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
     else:
         optimizer = apex.optimizers.FusedAdam(para, lr=learning_rate, eps=adam_epsilon)
         model, optimizer = amp.initialize(model, optimizer, opt_level=fp16_opt_level)
+        # ddpm = amp.initialize(ddpm, opt_level=args.fp16_opt_level)
     parameter_name = []
     parameter_name.extend([n for n, _ in model.model_vae.named_parameters() if
                             condition_f(n)])
@@ -66,6 +78,15 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
 
     # Train!
     # set_trace(term_size=(120,30))
+    logger.info("***** Running training *****")
+    # logger.info("  Num examples = %d", train_dataloader.num_examples)
+    logger.info("  Num Epochs = %d", train_epoch)
+    logger.info("  Instantaneous batch size per GPU = %d", batch_size)
+    logger.info("  Total train batch size (w. parallel, distributed & accumulation) = %d",
+                batch_size * gradient_accumulation_steps * (
+                    torch.distributed.get_world_size() if local_rank != -1 else 1))
+    logger.info("  Gradient Accumulation steps = %d", gradient_accumulation_steps)
+    logger.info("  Total optimization steps = %d", t_total)
 
     global_step = 0
     train_step = 0
@@ -77,9 +98,32 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
     
     train_iterator = trange(int(train_epoch), desc="Epoch", disable=disable_bar)
     model.eval()
+    if local_rank==0:
+        with torch.no_grad():
+            result_new = calc_rec_lgy(model.module.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
+            # result_new.update(evaluate(args, model.module.model_vae, encoder_tokenizer, decoder_tokenizer, table_name,eval_dataloader))
+            for key, value in result_new.items():
+                logger.info('eval_%s:%f',key,value)
+                tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
+            results_new = calc_ppl_lgy_ddpm(
+                            model.module.model_vae, decoder_tokenizer, ns=1,
+                            ddpm=model.module.ddpm, fp16=fp16,
+                            device=device
+                        )
+            for key, value in result_new.items():
+                logger.info('eval_%s:%f',key,value)
+                tb_writer.add_scalar('eval_DDPM_{}'.format(key), value, global_step)
 
+        logger.info('\nBLEU is %f\n"', result_new['bleu'])
+        for key, value in results_new.items():
+            tb_writer.add_scalar('eval_DDPM_{}'.format(key), value, global_step)
+            logger.info("DDPM_%s:%s",str(key),str(value))
+        logger.info('\nBLEU is %f\n"', result_new['bleu'])
+        torch.cuda.empty_cache()
     torch.distributed.barrier()
 
+    best_bleu = 0
+    best_ppl = 100
     if logging_steps == -1:
         logging_steps = len(train_dataloader) if len(train_dataloader)<2500 else 2500
     pbar_update = 100 if logging_steps > 1000 else logging_steps //5
@@ -146,9 +190,44 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
                     
                     global_step += 1
 
+                    if local_rank in [0] and logging_steps > 0 and global_step % logging_steps == 0:
+                        # Log metrics
+                        if local_rank == 0 and evaluate_during_training:  # Only evaluate when single GPU otherwise metrics may not average well
+                            #                         args.per_gpu_eval_batch_size = args.per_gpu_eval_batch_size // 2
+                            model.eval()
+                            with torch.no_grad():
+                                results_new = calc_ppl_lgy_ddpm(
+                                    model.module.model_vae, decoder_tokenizer, ns=1,
+                                    ddpm=model.module.ddpm, fp16=fp16,
+                                    device=device
+                                )
+                                for key, value in results_new.items():
+                                    logger.info("DDPM_"+key+": %s",str(results_new[key]))
+                                    tb_writer.add_scalar('eval_{}'.format("DDPM_"+key), value, global_step)
+                                results = calc_rec_lgy(model.module.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
+
+                            for key, value in results.items():
+                                tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
+                        
+                        tb_writer.add_scalar('lr', scheduler.get_last_lr()[0], global_step)
+                        tb_writer.add_scalar('loss', (tr_loss - logging_loss) / logging_steps, global_step)
+                        logging_loss = tr_loss
+                        if results['bleu'] >= best_bleu:
+                            best_bleu = results['bleu']
+                            if not no_save:
+                                save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, local_rank, logger, ppl=True, ddpm=model.ddpm)
+                        # to test after ppl re-established
+                        if 12 < results_new['ppl'] < best_ppl and results_new['norm_z'] < 12 and global_step > 2 * logging_steps:
+                            best_ppl = results_new['ppl']
+                            if not no_save:
+                                tb_writer.add_scalar('eval_best_ppl', best_ppl, global_step)
+                                tb_writer.add_scalar('eval_best_bleu', results['bleu'], global_step)
+                                save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, local_rank, logger, ppl=True, ddpm=model.ddpm)
+                        logger.info("Current Path is %s", output_dir)
                     torch.distributed.barrier()
 
-    
+    results = calc_rec_lgy(model.module.model_vae, encoder_tokenizer, decoder_tokenizer, eval_dataloader, device, disable_bar, ns=100)
+
     if local_rank in [-1, 0]:
         tb_writer.close()
 

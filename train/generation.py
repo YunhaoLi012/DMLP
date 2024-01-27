@@ -13,7 +13,7 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1,
     loss_list = []
     for _ in trange(num_epoch, desc="Evaluating PPL", disable=disable_bar):
         with torch.no_grad():
-            latent_z = ddpm.sample_new(bz,(model_vae.nz,), device, fp16=fp16)
+            latent_z = ddpm.sample(bz,(model_vae.nz,), device, fp16=fp16)
             loss = True
             out = sample_sequence_conditional(
                 model=model_vae.decoder,

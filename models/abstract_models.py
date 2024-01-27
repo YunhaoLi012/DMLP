@@ -14,7 +14,7 @@ class VAE_Abs(ABC, nn.Module):
 class DDPM_Abs(ABC, nn.Module):
 
     @abstractmethod
-    def __init__(self, eps_model, betas, n_T, criterion):
+    def __init__(self, eps_model, betas, n_T, criterion, ddpm_schedule):
         pass
 
     @abstractmethod
@@ -22,7 +22,7 @@ class DDPM_Abs(ABC, nn.Module):
         pass
 
     @abstractmethod
-    def sample(self, n_sample, size, device):
+    def sample(self, n_sample, size, device, fp16=False):
         pass
 
 class VAE_DDPM_Abs(ABC, nn.Module):
