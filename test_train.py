@@ -70,13 +70,13 @@ def main():
     model = VAE_DDPM(model_vae, ddpm,1.0 )
 
     print("start_training")
-    train_vae_ddpm(model, eval_dataloader, tokenizer_encoder, tokenizer_decoder, eval_dataloader, output_dir, condition_f=lambda x: False,
-          checkpoint=None, local_rank = 0, batch_size = 2, eval_batch_size = 64,
-          train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda',
-          fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
-          lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-          disable_bar=True, model_ppl=None, tokenizer_ppl=None, max_grad_norm=1, evaluate_during_training=False,
-          no_save=True)
+    # train_vae_ddpm(model, eval_dataloader, tokenizer_encoder, tokenizer_decoder, eval_dataloader, output_dir, condition_f=lambda x: False,
+    #       checkpoint=None, local_rank = 0, batch_size = 2, eval_batch_size = 64,
+    #       train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda',
+    #       fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
+    #       lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
+    #       disable_bar=True, model_ppl=None, tokenizer_ppl=None, max_grad_norm=1, evaluate_during_training=False,
+    #       no_save=True)
     print("training_done")
 
 
