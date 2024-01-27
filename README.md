@@ -22,7 +22,7 @@ sample \
 (in evaluation additonal sample options should be enabled) \
 abstract VAE_DDPM \ 
 constructor \
-forward \
+forward
 
 Need to check output from VAE_DDPM forward.
 This must match train function
