@@ -11,14 +11,12 @@ from .generation import *
 from functions import *
 
 
-def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer, 
-           eval_dataloader, output_dir, condition_f=lambda x: False,
-          checkpoint=None, local_rank = 0, logging_steps = -1,
+def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: False,
+                   local_rank = 0, logging_steps = -1,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-          disable_bar=True, max_grad_norm=1, evaluate_during_training=False,
-          no_save=True):
+          disable_bar=True, max_grad_norm=1):
     """ Train the model 
     condition_f: a function for linear warmup and decay
     evaluate_during_training: True only if using one GPU, or metrics may not average well
