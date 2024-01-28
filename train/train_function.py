@@ -26,6 +26,7 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: F
     torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     torch.cuda.empty_cache()
 
+    writer = SummaryWriter('./runs/' + output_dir)
 
     t_total = len(train_dataloader) // gradient_accumulation_steps * train_epoch
    
@@ -97,6 +98,13 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: F
 
                 model.train()
                 loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight = model(inputs, labels)
+                if train_step % 100 == 0:
+                    writer.add_scalar('loss_rec_train', loss_rec.mean().item(), train_step)
+                    writer.add_scalar('loss_kl_train', loss_kl.mean().item(), train_step)
+                    writer.add_scalar('loss_train', loss.mean().item(), train_step)
+                    writer.add_scalar('lr_train', scheduler.get_last_lr()[0], train_step)
+                    writer.add_scalar('loss_ddpm_train', ddpm_loss.mean().item(), train_step)
+                torch.distributed.barrier()
 
                 train_step += 1
                 loss_rec = loss_rec.mean()  # mean() to average on multi-gpu parallel training
@@ -118,7 +126,8 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: F
                         scaled_loss.backward()
                 else:
                     loss.backward()
-
+                writer.add_scalar('lr', scheduler.get_last_lr()[0], global_step)
+                writer.add_scalar('loss', (tr_loss - logging_loss) / logging_steps, global_step)
                 tr_loss += loss.item()
                 if (step + 1) % gradient_accumulation_steps == 0:
                     if fp16:
@@ -135,5 +144,5 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: F
                     global_step += 1
 
                     torch.distributed.barrier()
-
+    writer.close()
     return global_step, tr_loss / global_step, optimizer

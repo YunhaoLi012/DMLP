@@ -72,7 +72,7 @@ def main():
 
     print("start_training")
     train_vae_ddpm(model, eval_dataloader, output_dir, condition_f=lambda x: False,
-          local_rank = 0, train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda',
+          local_rank = 5, train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda:5',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
           disable_bar=True, max_grad_norm=1)
