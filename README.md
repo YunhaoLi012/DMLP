@@ -24,5 +24,6 @@ abstract VAE_DDPM \
 constructor \
 forward
 
+4. Test Multi-GPU trainining 
 Need to check output from VAE_DDPM forward.
 This must match train function
