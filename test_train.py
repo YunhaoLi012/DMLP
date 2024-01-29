@@ -8,7 +8,7 @@ import torch
 from models.my_transformers import *
 from models.models import VAE, DDPM, MLPSkipNet, TransformerNet,VAE_DDPM
 from train.reconstruction import *
-from functions import weights_init_rondom, ddpm_schedule
+from utils import weights_init_rondom, ddpm_schedule
 from train import *
 
 

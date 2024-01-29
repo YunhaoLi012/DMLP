@@ -4,7 +4,7 @@ import torch.nn as nn
 class VAE_Abs(ABC, nn.Module):
 
     @abstractmethod
-    def __init__(self, encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=None):
+    def __init__(self, encoder, decoder, device=None):
         super(VAE_Abs, self).__init__()
         pass
 

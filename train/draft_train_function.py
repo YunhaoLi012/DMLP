@@ -8,7 +8,7 @@ from apex import amp
 import logging
 from .reconstruction import *
 from .generation import *
-from functions import *
+from utils import *
 
 
 def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer, 

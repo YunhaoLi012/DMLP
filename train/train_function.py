@@ -8,7 +8,7 @@ from apex import amp
 import logging
 from .reconstruction import *
 from .generation import *
-from functions import *
+from utils import *
 
 
 def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: False,

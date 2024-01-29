@@ -1,5 +1,5 @@
 import torch
-from functions import sample_sequence_conditional
+from utils import sample_sequence_conditional
 from tqdm import tqdm, trange
 import numpy as np
 

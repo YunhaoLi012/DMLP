@@ -1,6 +1,6 @@
 import torch
 from nltk.translate.bleu_score import corpus_bleu
-from functions import sample_sequence_conditional
+from utils import sample_sequence_conditional
 from collections import defaultdict
 from tqdm import tqdm
 

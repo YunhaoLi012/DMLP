@@ -12,7 +12,7 @@ from .abstract_models import *
 
 class VAE(VAE_Abs):
     def __init__(self, encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=None):
-        super(VAE, self).__init__(encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=device)
+        super(VAE, self).__init__(encoder, decoder, device=device)
         self.encoder = encoder
         self.decoder = decoder
         self.nz = latent_size
