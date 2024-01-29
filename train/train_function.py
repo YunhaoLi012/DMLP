@@ -73,7 +73,7 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
                     torch.distributed.get_world_size() if local_rank != -1 else 1))
     logger.info("  Gradient Accumulation steps = %d", gradient_accumulation_steps)
     logger.info("  Total optimization steps = %d", t_total)
-    # set_trace(term_size=(120,30))
+
 
     global_step = 0
     train_step = 0
