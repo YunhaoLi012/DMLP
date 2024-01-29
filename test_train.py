@@ -31,6 +31,7 @@ class MyCollator(object):
         return (input_ids_bert, input_ids_gpt, token_lengths)
 
 def main():
+    batch_size = 8
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
     #initialize tokenizer and model
@@ -59,10 +60,10 @@ def main():
     #download data
     print("download data")
     train_eval_dataset =load_dataset("guangyil/yelp_short_v2")
-    eval_dataloader =  DataLoader(train_eval_dataset['test'], num_workers=0, collate_fn=my_collator,batch_size=8)
-    train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=8)
+    eval_dataloader =  DataLoader(train_eval_dataset['test'], num_workers=0, collate_fn=my_collator,batch_size=batch_size)
+    train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=batch_size)
 
-    output_dir = "test"
+    output_dir = "/home/AD/yul080/runs"
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     model_vae.apply(weights_init_rondom)
     # model_vae.to('cuda')   
@@ -71,15 +72,15 @@ def main():
     model = VAE_DDPM(model_vae, ddpm,1.0 )
 
     print("start_training")
-    train_vae_ddpm(model, eval_dataloader, output_dir, condition_f=lambda x: False,
+    train_vae_ddpm(model, eval_dataloader, output_dir,batch_size, condition_f=lambda x: False,
           local_rank = 5, train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda:5',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-          disable_bar=True, max_grad_norm=1)
+          disable_bar=True, max_grad_norm=1,save=True)
     print("training_done")
 
 
-print("here")
+
 
 
 if __name__ == "__main__":

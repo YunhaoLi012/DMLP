@@ -11,22 +11,24 @@ from .generation import *
 from utils import *
 
 
-def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: False,
+def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=lambda x: False,
                    local_rank = 0, logging_steps = -1,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-          disable_bar=True, max_grad_norm=1):
+          disable_bar=True, max_grad_norm=1,save=True):
     """ Train the model 
     condition_f: a function for linear warmup and decay
     evaluate_during_training: True only if using one GPU, or metrics may not average well
     model_ppl and tokenizer_ppl are required
-    no_save: False if you want to save checkpoint
+    save: True if you want to save checkpoint
+    output_dir: provide absolute path to store the outputs
     """
     torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     torch.cuda.empty_cache()
-
-    writer = SummaryWriter('./runs/' + output_dir)
+    logging.basicConfig(filename=output_dir+"/log.txt", level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    writer = SummaryWriter(output_dir+"/tensorboard")
 
     t_total = len(train_dataloader) // gradient_accumulation_steps * train_epoch
    
@@ -62,6 +64,15 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: F
                                                           )
 
     # Train!
+    logger.info("***** Running training *****")
+    # logger.info("  Num examples = %d", train_dataloader.num_examples)
+    logger.info("  Num Epochs = %d", train_epoch)
+    logger.info("  Instantaneous batch size per GPU = %d", batch_size)
+    logger.info("  Total train batch size (w. parallel, distributed & accumulation) = %d",
+                batch_size * gradient_accumulation_steps * (
+                    torch.distributed.get_world_size() if local_rank != -1 else 1))
+    logger.info("  Gradient Accumulation steps = %d", gradient_accumulation_steps)
+    logger.info("  Total optimization steps = %d", t_total)
     # set_trace(term_size=(120,30))
 
     global_step = 0
@@ -83,66 +94,73 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, condition_f=lambda x: F
     for epoch in train_iterator:
         # train_dataloader.reset()
         model.zero_grad()
-        for idx_file in range(1):
+        epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=False) 
+        for step, batch in enumerate(epoch_iterator):
+            # set_trace(term_size=(120,30))
+            tokenized_text0, tokenized_text1, _ = batch
+            inputs, labels = tokenized_text0, tokenized_text1
 
-            epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=False) 
-            for step, batch in enumerate(epoch_iterator):
-                # set_trace(term_size=(120,30))
-                tokenized_text0, tokenized_text1, _ = batch
-                inputs, labels = tokenized_text0, tokenized_text1
-                labels = tokenized_text1
+            tokenized_text1 = tokenized_text1.to(device)
+            inputs = inputs.to(device)
+            labels = labels.to(device)
 
-                tokenized_text1 = tokenized_text1.to(device)
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+            model.train()
+            loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight = model(inputs, labels)
+            if train_step % 100 == 0:
+                writer.add_scalar('loss_rec_train', loss_rec.mean().item(), train_step)
+                writer.add_scalar('loss_kl_train', loss_kl.mean().item(), train_step)
+                writer.add_scalar('loss_train', loss.mean().item(), train_step)
+                writer.add_scalar('lr_train', scheduler.get_last_lr()[0], train_step)
+                writer.add_scalar('loss_ddpm_train', ddpm_loss.mean().item(), train_step)
+            torch.distributed.barrier()
 
-                model.train()
-                loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight = model(inputs, labels)
-                if train_step % 100 == 0:
-                    writer.add_scalar('loss_rec_train', loss_rec.mean().item(), train_step)
-                    writer.add_scalar('loss_kl_train', loss_kl.mean().item(), train_step)
-                    writer.add_scalar('loss_train', loss.mean().item(), train_step)
-                    writer.add_scalar('lr_train', scheduler.get_last_lr()[0], train_step)
-                    writer.add_scalar('loss_ddpm_train', ddpm_loss.mean().item(), train_step)
-                torch.distributed.barrier()
+            train_step += 1
+            loss_rec = loss_rec.mean()  # mean() to average on multi-gpu parallel training
+            loss_kl = loss_kl.mean()
 
-                train_step += 1
-                loss_rec = loss_rec.mean()  # mean() to average on multi-gpu parallel training
-                loss_kl = loss_kl.mean()
-
-                if train_step % pbar_update == 0:
-                    epoch_iterator.set_description(
-                        (
-                            f'iter: {step + epoch * len(epoch_iterator)}; loss: {loss.item():.3f}; '
-                            f'loss_rec: {loss_rec.item():.3f}; ddpm: {ddpm_loss.mean().item():.3f}; '
-                        )
+            if train_step % pbar_update == 0:
+                epoch_iterator.set_description(
+                    (
+                        f'iter: {step + epoch * len(epoch_iterator)}; loss: {loss.item():.3f}; '
+                        f'loss_rec: {loss_rec.item():.3f}; ddpm: {ddpm_loss.mean().item():.3f}; '
                     )
+                )
+                logger.info(
+                    (
+                    f'iter: {step + epoch * len(epoch_iterator)}; lr_train: {scheduler.get_last_lr()[0]}; '
+                    f'loss: {loss.item():.3f}; loss_rec_train: {loss_rec.item():.3f}; '
+                    f'loss_kl_train: {loss_kl.mean().item()}; ddpm: {ddpm_loss.mean().item():.3f}; '
+                    )
+                )
 
-                if gradient_accumulation_steps > 1:
-                    loss = loss / gradient_accumulation_steps
+            if gradient_accumulation_steps > 1:
+                loss = loss / gradient_accumulation_steps
 
+            if fp16:
+                with amp.scale_loss(loss, optimizer) as scaled_loss:
+                    scaled_loss.backward()
+            else:
+                loss.backward()
+            writer.add_scalar('lr', scheduler.get_last_lr()[0], global_step)
+            writer.add_scalar('loss', (tr_loss - logging_loss) / logging_steps, global_step)
+            tr_loss += loss.item()
+            if (step + 1) % gradient_accumulation_steps == 0:
                 if fp16:
-                    with amp.scale_loss(loss, optimizer) as scaled_loss:
-                        scaled_loss.backward()
+                    torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), max_grad_norm)
                 else:
-                    loss.backward()
-                writer.add_scalar('lr', scheduler.get_last_lr()[0], global_step)
-                writer.add_scalar('loss', (tr_loss - logging_loss) / logging_steps, global_step)
-                tr_loss += loss.item()
-                if (step + 1) % gradient_accumulation_steps == 0:
-                    if fp16:
-                        torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), max_grad_norm)
-                    else:
-                        torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
 
-                    optimizer.step()
+                optimizer.step()
 
-                    scheduler.step()  # Update learning rate schedule
+                scheduler.step()  # Update learning rate schedule
 
-                    model.zero_grad()
-                    
-                    global_step += 1
+                model.zero_grad()
+                
+                global_step += 1
 
-                    torch.distributed.barrier()
+                torch.distributed.barrier()
+                if save:
+                    #save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, logger, ppl=True, ddpm=model.module.ddpm)
+                    None
     writer.close()
     return global_step, tr_loss / global_step, optimizer

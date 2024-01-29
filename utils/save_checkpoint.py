@@ -1,7 +1,7 @@
 import os
 import torch
 
-def save_checkpoint(model_vae, optimizer, global_step, parameter_name, output_dir, local_rank, logger, ppl=False, ddpm=None, use_philly=False):
+def save_checkpoint(model_vae, optimizer, global_step, parameter_name, output_dir, logger, ppl=False, ddpm=None, use_philly=False):
     # Create output directory if needed
     # Save model checkpoint
     save_last = 1
@@ -28,13 +28,15 @@ def save_checkpoint(model_vae, optimizer, global_step, parameter_name, output_di
     if ppl:
         save_last = 2
     output_ddpm_dir = os.path.join(output_dir, 'checkpoint-ddpm-{}'.format(save_last))
-    if not os.path.exists(output_ddpm_dir) and local_rank in [-1, 0]:
+    #if not os.path.exists(output_ddpm_dir) and local_rank in [-1, 0]:?
+    if not os.path.exists(output_ddpm_dir):
         os.makedirs(output_ddpm_dir)
     torch.save(checkpoint_ddpm, os.path.join(output_ddpm_dir, 'training_ddpm.bin'))
     logger.info("Saving DDPM checkpoint to %s", output_ddpm_dir)
     
     output_full_dir = os.path.join(output_dir, 'checkpoint-full-{}'.format(save_last))
-    if not os.path.exists(output_full_dir) and local_rank in [-1, 0]:
+    # if not os.path.exists(output_full_dir) and local_rank in [-1, 0]:
+    if not os.path.exists(output_full_dir):
         os.makedirs(output_full_dir)
 
     logger.info("Start saving full model checkpoint to %s", output_full_dir)

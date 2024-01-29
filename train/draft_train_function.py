@@ -25,6 +25,7 @@ def train_vae_ddpm(model, train_dataloader, encoder_tokenizer, decoder_tokenizer
     model_ppl and tokenizer_ppl are required
     no_save: False if you want to save checkpoint
     """
+    
     logger = logging.getLogger(__name__)
 
     torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
