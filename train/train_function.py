@@ -8,7 +8,11 @@ from apex import amp
 import logging
 from .reconstruction import *
 from .generation import *
+
+import sys
+sys.path.append("..")
 from utils import *
+
 from .evaluation import *
 
 
