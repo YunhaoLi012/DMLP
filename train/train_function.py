@@ -9,6 +9,7 @@ import logging
 from .reconstruction import *
 from .generation import *
 from utils import *
+from .evaluation import *
 
 
 def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=lambda x: False,
@@ -16,13 +17,18 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-          disable_bar=True, max_grad_norm=1,save=True):
-    """ Train the model 
+          disable_bar=True, max_grad_norm=1,save=True, evaluate_during_training=False, eval_dataloader=None,
+          sent_length=32, model_id='gpt2', ppl_eval=True):
+    
+    """ 
+    Train the model 
     condition_f: a function for linear warmup and decay
     evaluate_during_training: True only if using one GPU, or metrics may not average well
     model_ppl and tokenizer_ppl are required
     save: True if you want to save checkpoint
     output_dir: provide absolute path to store the outputs
+
+    if evaluate_during_training: all related inputs should be given
     """
     torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     torch.cuda.empty_cache()
@@ -91,6 +97,9 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
     if logging_steps == -1:
         logging_steps = len(train_dataloader) if len(train_dataloader)<2500 else 2500
     pbar_update = 100 if logging_steps > 1000 else logging_steps //5
+
+    max_bleu_score = 0
+
     for epoch in train_iterator:
         # train_dataloader.reset()
         model.zero_grad()
@@ -158,9 +167,21 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
                 
                 global_step += 1
 
+                if evaluate_during_training and isinstance(local_rank, int) and \
+                    logging_steps > 0 and global_step % logging_steps == 0 and eval_dataloader != None:
+                    
+                    model.eval()
+                    with torch.nograd():
+                        results = evaluation(model, eval_dataloader, device, disable_bar, \
+                            output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
+                    for key, value in results.items():
+                        writer.add_scalar('eval_{}'.format(key), value, global_step)
+                    if results['bleu'] > max_bleu_score:
+                        max_bleu_score = results['bleu']
+                        if save:
+                            save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, logger, ppl=True, ddpm=model.module.ddpm)
+                            
                 torch.distributed.barrier()
-                if save:
-                    #save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, logger, ppl=True, ddpm=model.module.ddpm)
-                    None
+
     writer.close()
     return global_step, tr_loss / global_step, optimizer

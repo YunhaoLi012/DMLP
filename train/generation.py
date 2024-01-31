@@ -2,9 +2,11 @@ import torch
 from utils import sample_sequence_conditional
 from tqdm import tqdm, trange
 import numpy as np
+from transformers import AutoTokenizer, GPT2TokenizerFast
+from transformers import GPT2LMHeadModel as GPT2_
 
 def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
-                      ddpm=None, device='cpu', output_dir = "output.txt", disable_bar=True, fp16=False):
+                      ddpm=None, device='cpu', output_dir = "output.txt", disable_bar=True, fp16=False, model_id='gpt2', ppl_eval=True):
     generate_text = []
     bz = 100
     num_epoch = ns
@@ -38,26 +40,34 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
 
     with open(output_dir,'w') as f:
         f.write(''.join(generate_text))
+    
+    if ppl_eval:
+        if model_id == 'gpt2':
+            model_ppl = GPT2_.from_pretrained(model_id,local_files_only=False).to(device)
+            tokenizer_ppl = GPT2TokenizerFast.from_pretrained(model_id,local_files_only=False)
+        else:
+            model_ppl = GPT2_.from_pretrained(model_id,local_files_only=False).to(device)
+            tokenizer_ppl = GPT2TokenizerFast.from_pretrained(model_id,local_files_only=False)
 
-    # encodings = tokenizer_ppl('\n\n'.join(generate_text), return_tensors='pt')
-    # max_length = model_ppl.config.n_positions
-    # stride = 512
+        encodings = tokenizer_ppl('\n\n'.join(generate_text), return_tensors='pt')
+        max_length = model_ppl.config.n_positions
+        stride = 512
 
-    # nlls = []
-    # for i in range(0, encodings.input_ids.size(1), stride):
-    #     begin_loc = max(i + stride - max_length, 0)
-    #     end_loc = min(i + stride, encodings.input_ids.size(1))
-    #     trg_len = end_loc - i  # may be different from stride on last loop
-    #     input_ids = encodings.input_ids[:, begin_loc:end_loc].cuda()
-    #     target_ids = input_ids.clone()
-    #     target_ids[:, :-trg_len] = -100
+        nlls = []
+        for i in range(0, encodings.input_ids.size(1), stride):
+            begin_loc = max(i + stride - max_length, 0)
+            end_loc = min(i + stride, encodings.input_ids.size(1))
+            trg_len = end_loc - i  # may be different from stride on last loop
+            input_ids = encodings.input_ids[:, begin_loc:end_loc].cuda()
+            target_ids = input_ids.clone()
+            target_ids[:, :-trg_len] = -100
 
-    #     with torch.no_grad():
-    #         outputs = model_ppl(input_ids, labels=target_ids)
-    #         neg_log_likelihood = outputs[0] * trg_len
+            with torch.no_grad():
+                outputs = model_ppl(input_ids, labels=target_ids)
+                neg_log_likelihood = outputs[0] * trg_len
 
-    #     nlls.append(neg_log_likelihood)
-    # ppl = torch.exp(torch.stack(nlls).sum() / end_loc)
+            nlls.append(neg_log_likelihood)
+        ppl = torch.exp(torch.stack(nlls).sum() / end_loc)
 
     list_of_references = []
     len_list = []
@@ -80,6 +90,9 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
 
     len_mean = np.mean(len_list)
     norm_z = latent_z.norm(dim=-1).mean().item()
-    # return {'ppl': ppl, 'sbleu': round(score, 2), 'length': round(len_mean, 2), 'norm_z': norm_z,
-    #         'ppl_sbleu': ppl + round(score, 2)}
-    return {'sbleu': round(score, 2), 'length': round(len_mean, 2), 'norm_z': norm_z}
+
+    if ppl_eval:
+        return {'ppl': ppl, 'sbleu': round(score, 2), 'length': round(len_mean, 2), 'norm_z': norm_z,
+                'ppl_sbleu': ppl + round(score, 2)}
+    else:
+        return {'sbleu': round(score, 2), 'length': round(len_mean, 2), 'norm_z': norm_z}
