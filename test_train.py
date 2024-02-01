@@ -80,7 +80,7 @@ def main():
     optimizer = torch.optim.Adam
 
     world_size = 4
-    args = (world_size,model, optimizer, eval_dataloader,  output_dir, batch_size,condition_f, -1, 5, 
+    args = (world_size,model, optimizer, train_dataloader,  output_dir, batch_size,condition_f, -1, 5, 
         1,'cuda', True, None, 9e-5, 1e-5, 0.01, 3.0, 0, True, 1,True, True, eval_dataloader, 
           32, 'gpt2', True)
     print("start_training")

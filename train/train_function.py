@@ -13,6 +13,7 @@ from .generation import *
 import sys
 sys.path.append("..")
 from utils import *
+import os
 
 from .evaluation import *
 
@@ -38,6 +39,8 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
     """
     # torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     device = f"cuda:{local_rank}"
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
     torch.cuda.empty_cache()
     logging.basicConfig(filename=output_dir+"/log.txt", level=logging.INFO)
     logger = logging.getLogger(__name__)
