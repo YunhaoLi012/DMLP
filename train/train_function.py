@@ -3,8 +3,9 @@ from tensorboardX import SummaryWriter
 from transformers import AdamW 
 from transformers import get_polynomial_decay_schedule_with_warmup
 from tqdm import tqdm, trange
-import apex
-from apex import amp
+# import apex
+from torch.cuda.amp import GradScaler
+# from apex import amp
 import logging
 from .reconstruction import *
 from .generation import *
@@ -16,7 +17,7 @@ from utils import *
 from .evaluation import *
 
 
-def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=lambda x: False,
+def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,condition_f=lambda x: False,
                    local_rank = 0, logging_steps = -1,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
@@ -31,10 +32,12 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
     model_ppl and tokenizer_ppl are required
     save: True if you want to save checkpoint
     output_dir: provide absolute path to store the outputs
+    device: device where the model store
+    local_rank: list of gpus for parallel processing
 
     if evaluate_during_training: all related inputs should be given
     """
-    torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
+    # torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     torch.cuda.empty_cache()
     logging.basicConfig(filename=output_dir+"/log.txt", level=logging.INFO)
     logger = logging.getLogger(__name__)
@@ -47,14 +50,14 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
     if model.ddpm_weight > 0:
         para.extend([p for n, p in model.ddpm.named_parameters()])
     if not fp16:
-        optimizer_grouped_parameters = [
-            {'params': para,
-                'weight_decay': 0.0}
-        ]
-        optimizer = AdamW(optimizer_grouped_parameters, lr=learning_rate, eps=adam_epsilon)
+        # optimizer_grouped_parameters = [
+        #     {'params': para,
+        #         'weight_decay': 0.0}
+        # ]
+        optimizer = optimizer(para, lr=learning_rate, eps=adam_epsilon)
     else:
-        optimizer = apex.optimizers.FusedAdam(para, lr=learning_rate, eps=adam_epsilon)
-        model, optimizer = amp.initialize(model, optimizer, opt_level=fp16_opt_level)
+        optimizer = optimizer(para, lr=learning_rate, eps=adam_epsilon, fused=torch.float16)
+        scaler = GradScaler()
     parameter_name = []
     parameter_name.extend([n for n, _ in model.model_vae.named_parameters() if
                             condition_f(n)])
@@ -69,9 +72,7 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
     
     torch.distributed.init_process_group(backend='nccl',init_method='env://')
     # if local_rank != -1:
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[local_rank],
-                                                          output_device=local_rank,
-                                                          )
+    model = torch.nn.parallel.DataParallel(model, device_ids=local_rank)
 
     # Train!
     logger.info("***** Running training *****")
@@ -118,7 +119,11 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
             labels = labels.to(device)
 
             model.train()
-            loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight = model(inputs, labels)
+            if fp16:
+                with torch.autocast(device_type="cuda",dtype=torch.float16):
+                    loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight = model(inputs, labels)
+            else:
+                loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight = model(inputs, labels)
             if train_step % 100 == 0:
                 writer.add_scalar('loss_rec_train', loss_rec.mean().item(), train_step)
                 writer.add_scalar('loss_kl_train', loss_kl.mean().item(), train_step)
@@ -150,8 +155,9 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
                 loss = loss / gradient_accumulation_steps
 
             if fp16:
-                with amp.scale_loss(loss, optimizer) as scaled_loss:
-                    scaled_loss.backward()
+                print(loss)
+                scaler.scale(loss).backward()
+
             else:
                 loss.backward()
             writer.add_scalar('lr', scheduler.get_last_lr()[0], global_step)
@@ -159,24 +165,25 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
             tr_loss += loss.item()
             if (step + 1) % gradient_accumulation_steps == 0:
                 if fp16:
-                    torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), max_grad_norm)
+                    scaler.unscale_(optimizer)
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
                 else:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
 
-                optimizer.step()
-
+                scaler.step(optimizer)
+                scaler.update()
                 scheduler.step()  # Update learning rate schedule
 
                 model.zero_grad()
                 
                 global_step += 1
 
-                if evaluate_during_training and isinstance(local_rank, int) and \
+                if evaluate_during_training and \
                     logging_steps > 0 and global_step % logging_steps == 0 and eval_dataloader != None:
                     
                     model.eval()
                     with torch.nograd():
-                        results = evaluation(model, eval_dataloader, device, disable_bar, \
+                        results = evaluation(model.module, eval_dataloader, device, disable_bar, \
                             output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
                     for key, value in results.items():
                         writer.add_scalar('eval_{}'.format(key), value, global_step)

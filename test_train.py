@@ -30,9 +30,13 @@ class MyCollator(object):
                 token_lengths[i, len(batch[i]['gpt2_token'])] = 1
         return (input_ids_bert, input_ids_gpt, token_lengths)
 
+
 def main():
     batch_size = 8
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
+
+    def condition_f(n):
+        return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
 
     #initialize tokenizer and model
     print("initialize models")
@@ -70,11 +74,12 @@ def main():
     ddpm = DDPM(MLPSkipNet(latent_size), (1e-4, 0.02), 1000, nn.MSELoss(reduction='none'), ddpm_schedule)
     ddpm.apply(weights_init_rondom)
     model = VAE_DDPM(model_vae, ddpm,1.0 )
+    optimizer = torch.optim.Adam
 
     print("start_training")
-    train_vae_ddpm(model, eval_dataloader, output_dir,batch_size, condition_f=lambda x: False,
-          local_rank = 5, train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda:5',
-          fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
+    train_vae_ddpm(model, optimizer, eval_dataloader, output_dir,batch_size, condition_f=condition_f,
+          local_rank =[0,1,2,3], train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda:0',
+          fp16=True, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
           disable_bar=True, max_grad_norm=1,save=True)
     print("training_done")
