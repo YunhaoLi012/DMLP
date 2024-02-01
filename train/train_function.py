@@ -155,11 +155,11 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
                 loss = loss / gradient_accumulation_steps
 
             if fp16:
-                print(loss)
-                scaler.scale(loss).backward()
+                scaler.scale(torch.mean(loss)).backward()
 
             else:
                 loss.backward()
+            loss = torch.mean(loss)
             writer.add_scalar('lr', scheduler.get_last_lr()[0], global_step)
             writer.add_scalar('loss', (tr_loss - logging_loss) / logging_steps, global_step)
             tr_loss += loss.item()
