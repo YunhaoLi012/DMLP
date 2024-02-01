@@ -182,8 +182,16 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
                     
                     model.eval()
                     with torch.no_grad():
-                        results = evaluation(model.module, eval_dataloader, device, disable_bar, \
-                            output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
+                        if fp16:
+                            with torch.autocast(device_type="cuda",dtype=torch.float16):
+                                loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight = model(inputs, labels)
+                                results = evaluation(model.module, eval_dataloader, device, disable_bar, \
+                                        output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
+                        else:
+                            loss_rec, loss_kl, loss, latent_z, mu, ddpm_loss, loss_weight = model(inputs, labels)
+                            results = evaluation(model.module, eval_dataloader, device, disable_bar, \
+                                output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
+                            
                     for key, value in results.items():
                         writer.add_scalar('eval_{}'.format(key), value, global_step)
                     if results['bleu'] > max_bleu_score:

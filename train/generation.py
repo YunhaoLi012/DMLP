@@ -38,7 +38,7 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
             text_x1 = ' '.join(text_x1.split())
             generate_text.append(text_x1 + '\n')
 
-    with open(output_dir,'w') as f:
+    with open(output_dir+"/output.txt",'w') as f:
         f.write(''.join(generate_text))
     
     if ppl_eval:
@@ -58,7 +58,7 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
             begin_loc = max(i + stride - max_length, 0)
             end_loc = min(i + stride, encodings.input_ids.size(1))
             trg_len = end_loc - i  # may be different from stride on last loop
-            input_ids = encodings.input_ids[:, begin_loc:end_loc].cuda()
+            input_ids = encodings.input_ids[:, begin_loc:end_loc].to(device)
             target_ids = input_ids.clone()
             target_ids[:, :-trg_len] = -100
 
