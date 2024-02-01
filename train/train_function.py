@@ -139,14 +139,14 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
             if train_step % pbar_update == 0:
                 epoch_iterator.set_description(
                     (
-                        f'iter: {step + epoch * len(epoch_iterator)}; loss: {loss.item():.3f}; '
+                        f'iter: {step + epoch * len(epoch_iterator)}; loss: {torch.mean(loss).item():.3f}; '
                         f'loss_rec: {loss_rec.item():.3f}; ddpm: {ddpm_loss.mean().item():.3f}; '
                     )
                 )
                 logger.info(
                     (
                     f'iter: {step + epoch * len(epoch_iterator)}; lr_train: {scheduler.get_last_lr()[0]}; '
-                    f'loss: {loss.item():.3f}; loss_rec_train: {loss_rec.item():.3f}; '
+                    f'loss: {torch.mean(loss).item():.3f}; loss_rec_train: {loss_rec.item():.3f}; '
                     f'loss_kl_train: {loss_kl.mean().item()}; ddpm: {ddpm_loss.mean().item():.3f}; '
                     )
                 )
