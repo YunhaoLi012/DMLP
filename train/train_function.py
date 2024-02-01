@@ -17,8 +17,7 @@ from utils import *
 from .evaluation import *
 
 
-def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,condition_f=lambda x: False,
-                   local_rank = 0, logging_steps = -1,
+def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  output_dir, batch_size,condition_f=lambda x: False, logging_steps = -1,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
@@ -38,6 +37,7 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
     if evaluate_during_training: all related inputs should be given
     """
     # torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
+    device = f"cuda:{local_rank}"
     torch.cuda.empty_cache()
     logging.basicConfig(filename=output_dir+"/log.txt", level=logging.INFO)
     logger = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
 
     t_total = len(train_dataloader) // gradient_accumulation_steps * train_epoch
    
-    model = model.to(device)
+    model = model.to(local_rank)
     para = [p for n, p in model.model_vae.named_parameters() if condition_f(n)]
     if model.ddpm_weight > 0:
         para.extend([p for n, p in model.ddpm.named_parameters()])
@@ -70,9 +70,9 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
 
     # Distributed training (should be after apex fp16 initialization)
     
-    torch.distributed.init_process_group(backend='nccl',init_method='env://')
+    torch.distributed.init_process_group(backend='nccl',init_method='env://',rank = local_rank,world_size = world_size)
     # if local_rank != -1:
-    model = torch.nn.parallel.DataParallel(model, device_ids=local_rank)
+    model = torch.nn.parallel.DataParallel(model, device_ids=[local_rank])
 
     # Train!
     logger.info("***** Running training *****")
@@ -95,7 +95,6 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
     #                                         'module') else model  # Take care of distributed/parallel training
     
     train_iterator = trange(int(train_epoch), desc="Epoch", disable=disable_bar)
-    model.eval()
 
     torch.distributed.barrier()
 
@@ -114,9 +113,9 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
             tokenized_text0, tokenized_text1, _ = batch
             inputs, labels = tokenized_text0, tokenized_text1
 
-            tokenized_text1 = tokenized_text1.to(device)
-            inputs = inputs.to(device)
-            labels = labels.to(device)
+            tokenized_text1 = tokenized_text1.to(local_rank)
+            inputs = inputs.to(local_rank)
+            labels = labels.to(local_rank)
 
             model.train()
             if fp16:
@@ -139,14 +138,14 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
             if train_step % pbar_update == 0:
                 epoch_iterator.set_description(
                     (
-                        f'iter: {step + epoch * len(epoch_iterator)}; loss: {torch.mean(loss).item():.3f}; '
+                        f'iter: {step + epoch * len(epoch_iterator)}; loss: {loss.item():.3f}; '
                         f'loss_rec: {loss_rec.item():.3f}; ddpm: {ddpm_loss.mean().item():.3f}; '
                     )
                 )
                 logger.info(
                     (
                     f'iter: {step + epoch * len(epoch_iterator)}; lr_train: {scheduler.get_last_lr()[0]}; '
-                    f'loss: {torch.mean(loss).item():.3f}; loss_rec_train: {loss_rec.item():.3f}; '
+                    f'loss: {loss.item():.3f}; loss_rec_train: {loss_rec.item():.3f}; '
                     f'loss_kl_train: {loss_kl.mean().item()}; ddpm: {ddpm_loss.mean().item():.3f}; '
                     )
                 )
@@ -159,7 +158,7 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
 
             else:
                 loss.backward()
-            loss = torch.mean(loss)
+            # loss = torch.mean(loss)
             writer.add_scalar('lr', scheduler.get_last_lr()[0], global_step)
             writer.add_scalar('loss', (tr_loss - logging_loss) / logging_steps, global_step)
             tr_loss += loss.item()
@@ -182,7 +181,7 @@ def train_vae_ddpm(model, optimizer, train_dataloader,  output_dir, batch_size,c
                     logging_steps > 0 and global_step % logging_steps == 0 and eval_dataloader != None:
                     
                     model.eval()
-                    with torch.nograd():
+                    with torch.no_grad():
                         results = evaluation(model.module, eval_dataloader, device, disable_bar, \
                             output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
                     for key, value in results.items():

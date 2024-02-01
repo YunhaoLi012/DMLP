@@ -3,6 +3,9 @@ from transformers import AutoTokenizer
 from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 import torch
+import os
+
+import torch.multiprocessing as mp
 
 
 from models.my_transformers import *
@@ -29,14 +32,14 @@ class MyCollator(object):
             for i in range(len(batch)):
                 token_lengths[i, len(batch[i]['gpt2_token'])] = 1
         return (input_ids_bert, input_ids_gpt, token_lengths)
-
+def condition_f(n):
+        return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
 
 def main():
     batch_size = 8
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
-    def condition_f(n):
-        return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
+    
 
     #initialize tokenizer and model
     print("initialize models")
@@ -76,12 +79,12 @@ def main():
     model = VAE_DDPM(model_vae, ddpm,1.0 )
     optimizer = torch.optim.Adam
 
+    world_size = 4
+    args = (world_size,model, optimizer, eval_dataloader,  output_dir, batch_size,condition_f, -1, 5, 
+        1,'cuda', True, None, 9e-5, 1e-5, 0.01, 3.0, 0, True, 1,True, True, eval_dataloader, 
+          32, 'gpt2', True)
     print("start_training")
-    train_vae_ddpm(model, optimizer, eval_dataloader, output_dir,batch_size, condition_f=condition_f,
-          local_rank =[0,1,2,3], train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda:0',
-          fp16=True, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
-          lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-          disable_bar=True, max_grad_norm=1,save=True)
+    mp.spawn(train_vae_ddpm,args = args,nprocs=world_size,join=True)
     print("training_done")
 
 
@@ -89,4 +92,6 @@ def main():
 
 
 if __name__ == "__main__":
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "29500"
     main()
