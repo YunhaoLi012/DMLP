@@ -42,12 +42,8 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
         f.write(''.join(generate_text))
     
     if ppl_eval:
-        if model_id == 'gpt2':
-            model_ppl = GPT2_.from_pretrained(model_id,local_files_only=False).to(device)
-            tokenizer_ppl = GPT2TokenizerFast.from_pretrained(model_id,local_files_only=False)
-        else:
-            model_ppl = GPT2_.from_pretrained(model_id,local_files_only=False).to(device)
-            tokenizer_ppl = GPT2TokenizerFast.from_pretrained(model_id,local_files_only=False)
+        model_ppl = GPT2_.from_pretrained(model_id,local_files_only=False).to(device)
+        tokenizer_ppl = GPT2TokenizerFast.from_pretrained(model_id,local_files_only=False)
 
         encodings = tokenizer_ppl('\n\n'.join(generate_text), return_tensors='pt')
         max_length = model_ppl.config.n_positions
@@ -74,8 +70,9 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
     for jj, line in enumerate(generate_text):
         if jj < 10:
             if jj == 0: 
-                print('\n\n')
-            print(line)
+            #     print('\n\n')
+            # print(line)
+                pass
         split = line.strip().split(' ')
         list_of_references.append(split)
         len_list.append(len(split))

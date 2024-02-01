@@ -63,7 +63,7 @@ def main():
     eval_dataloader =  DataLoader(train_eval_dataset['test'], num_workers=0, collate_fn=my_collator,batch_size=batch_size)
     train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=batch_size)
 
-    output_dir = "/home/AD/yul080/runs"
+    output_dir = "/data/jieqi/DMLP"
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     model_vae.apply(weights_init_rondom)
     # model_vae.to('cuda')   
@@ -76,7 +76,7 @@ def main():
           local_rank = 5, train_epoch = 5, gradient_accumulation_steps = 1, device = 'cuda:5',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
-          disable_bar=True, max_grad_norm=1,save=True)
+          disable_bar=True, max_grad_norm=1,save=True, evaluate_during_training=True, eval_dataloader=eval_dataloader)
     print("training_done")
 
 
