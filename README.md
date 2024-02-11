@@ -1,29 +1,40 @@
 # DMLP
-A library for training diffusion model
+DMLP is a python library for training diffusion model
+- **Website:** 
+- **Documentation:** 
+- **Mailing list:** 
+- **Source code:** 
+- **Contributing:** 
+- **Bug reports:** 
 
-#### Log
-1. Perplexity: exponential of loss \
-original: calculated by model_ppl and tokenizer_ppl \
-idea: calculate by trained gpt2 and corresponding tokenizer (self.decoder and self.tokenizer_decoder) \
-question: why they used model_ppl, not even trained
+It provides:
 
-2. apex optimizer and transformer optimizer
-https://huggingface.co/transformers/v2.9.1/main_classes/optimizer_schedules.html
-https://nvidia.github.io/apex/optimizers.html
+- APIs for constructing and training/fine-tuning text diffusion model 
+- Abstract classes for developing models in text diffusion
 
-3. Abstract models: \
-abstract VAE \
-constructor \
-forward \
-abstract DDPM \
-constructor \
-forward \
-sample \
-(in evaluation additonal sample options should be enabled) \
-abstract VAE_DDPM \
-constructor \
-forward
 
-4. Test Multi-GPU trainining 
-Need to check output from VAE_DDPM forward.
-This must match train function
+   
+<!-- toc -->
+
+- [Installation](#installation)
+  - [On Linux](#on-linux)
+- [Tutorial](#Tutorial)
+
+
+
+<!-- tocstop -->
+
+## Installation
+----------------------
+### On Linux
+```
+pip install -i https://test.pypi.org/simple/ DMLP==0.0.1
+```
+
+## Tutorial
+We provide a demo file in at https://github.com/YunhaoLi012/DMLP/blob/torchamp/tests/test_train.py . This script replicate the result of the following paper https://openreview.net/forum?id=bgIZDxd2bM . To run the code, simpily run the following command
+```
+CUDA_VISIBLE_DEVICES=0 torchrun test_train.py
+```
+Make sure you are in the folder which contains test_train.py file. 
+
