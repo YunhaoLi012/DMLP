@@ -1,17 +1,11 @@
-from datasets import load_dataset,concatenate_datasets, Dataset,DatasetDict
+from models.models import VAE, DDPM, MLPSkipNet, TransformerNet,VAE_DDPM
+from models.my_transformers import *
 from transformers import AutoTokenizer
 from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
-import torch
-
-
-from models.my_transformers import *
-from models.models import VAE, DDPM, MLPSkipNet, TransformerNet,VAE_DDPM
-from train.reconstruction import *
+from datasets import load_dataset
 from utils import weights_init_rondom, ddpm_schedule
 from train import *
-import time
-
 
 class MyCollator(object):
     def __init__(self, encoder_token, decoder_token):
@@ -31,7 +25,8 @@ class MyCollator(object):
                 token_lengths[i, len(batch[i]['gpt2_token'])] = 1
         return (input_ids_bert, input_ids_gpt, token_lengths)
 
-def main():
+def load():
+    local_rank=0
     batch_size = 16
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
@@ -66,29 +61,26 @@ def main():
 
     output_dir = "/data/jieqi/DMLP"
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
-    model_vae.apply(weights_init_rondom)
-    # model_vae.to('cuda')   
+    checkpoint = torch.load('../ckpts/checkpoints/checkpoint-full-2/training.bin',map_location=torch.device('cpu'))
+    model_vae.load_state_dict(checkpoint['model_state_dict'], strict=False) 
     ddpm = DDPM(MLPSkipNet(latent_size), (1e-4, 0.02), 2000, nn.MSELoss(reduction='none'), ddpm_schedule)
-    ddpm.apply(weights_init_rondom)
-    model = VAE_DDPM(model_vae, ddpm, 10 )
+    ddpm_checkpoint = torch.load('../ckpts/checkpoints/checkpoint-ddpm-2-1/training_ddpm.bin', map_location=torch.device('cuda', local_rank))
+    ddpm.load_state_dict(ddpm_checkpoint['model_state_dict'], strict=False)
+    model = VAE_DDPM(model_vae, ddpm, 10)
 
     def condition_f(n):
         return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
 
     print("start_training")
     train_vae_ddpm(model, train_dataloader, output_dir,batch_size, condition_f=condition_f,
-          local_rank = 1, train_epoch = 10, gradient_accumulation_steps = 1, device = 'cuda:1',
+          local_rank = 0, train_epoch = 3, gradient_accumulation_steps = 1, device = 'cuda:0',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
           lr_end_multiplier= 0.01, power=3.0, warmup_steps=0, 
           disable_bar=True, max_grad_norm=1,save=True, evaluate_during_training=True, eval_dataloader=eval_dataloader)
     print("training_done")
 
-
-
-
-
 if __name__ == "__main__":
-    start = time.time()
-    main()
-    end = time.time()
-    print(end-start)
+    import os
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "29500"
+    load()

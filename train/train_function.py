@@ -94,7 +94,6 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
     #                                         'module') else model  # Take care of distributed/parallel training
     
     train_iterator = trange(int(train_epoch), desc="Epoch", disable=disable_bar)
-    model.eval()
 
     torch.distributed.barrier()
 
@@ -162,7 +161,10 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
                     torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), max_grad_norm)
                 else:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
-
+            # if fp16:
+            #     torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), max_grad_norm)
+            # else:
+            #     torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
                 optimizer.step()
 
                 scheduler.step()  # Update learning rate schedule
@@ -171,21 +173,24 @@ def train_vae_ddpm(model, train_dataloader,  output_dir, batch_size,condition_f=
                 
                 global_step += 1
 
-                if evaluate_during_training and isinstance(local_rank, int) and \
-                    logging_steps > 0 and global_step % logging_steps == 0 and eval_dataloader != None:
+                # if evaluate_during_training and isinstance(local_rank, int) and \
+                #     logging_steps > 0 and global_step % logging_steps == 0 and eval_dataloader != None:
                     
-                    model.eval()
-                    with torch.nograd():
-                        results = evaluation(model, eval_dataloader, device, disable_bar, \
-                            output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
-                    for key, value in results.items():
-                        writer.add_scalar('eval_{}'.format(key), value, global_step)
-                    if results['bleu'] > max_bleu_score:
-                        max_bleu_score = results['bleu']
-                        if save:
-                            save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, logger, ppl=True, ddpm=model.module.ddpm)
+                #     model.eval()
+                #     with torch.nograd():
+                #         results = evaluation(model, eval_dataloader, device, disable_bar, \
+                #             output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
+                #     for key, value in results.items():
+                #         writer.add_scalar('eval_{}'.format(key), value, global_step)
+                #     if results['bleu'] > max_bleu_score:
+                #         max_bleu_score = results['bleu']
+                #         if save:
+                #             save_checkpoint(model.module.model_vae, optimizer, global_step, parameter_name, output_dir, logger, ppl=True, ddpm=model.module.ddpm)
                             
                 torch.distributed.barrier()
+            print(loss_rec)
+
+    
 
     writer.close()
     return global_step, tr_loss / global_step, optimizer

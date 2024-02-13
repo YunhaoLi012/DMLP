@@ -1,0 +1,263 @@
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 5
+INFO:train.train_function:  Instantaneous batch size per GPU = 32
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 32
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 69885
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 5
+INFO:train.train_function:  Instantaneous batch size per GPU = 32
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 32
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 69885
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 5
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 139770
+INFO:train.train_function:iter: 99; lr_train: 8.981080374384407e-05; loss: 2.300; loss_rec_train: 67.319; loss_kl_train: 32993.90625; ddpm: 1.199; 
+INFO:train.train_function:iter: 199; lr_train: 8.961996850612598e-05; loss: 2.083; loss_rec_train: 61.881; loss_kl_train: 32496.716796875; ddpm: 0.938; 
+INFO:train.train_function:iter: 299; lr_train: 8.942940653229959e-05; loss: 1.898; loss_rec_train: 57.649; loss_kl_train: 30712.83984375; ddpm: 0.802; 
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 5
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 5
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 5
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 139770
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 2795400
+INFO:train.train_function:iter: 2767446; lr_train: 8.999053381883599e-05; loss: 1.878; loss_rec_train: 57.304; loss_kl_train: 29714.8359375; ddpm: 1.005; 
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 10000
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 279540000
+INFO:train.train_function:iter: 2767446; lr_train: 8.999990533486935e-05; loss: 1.903; loss_rec_train: 54.556; loss_kl_train: 23296.69140625; ddpm: 0.991; 
+INFO:train.train_function:iter: 5562846; lr_train: 8.999980971359328e-05; loss: 1.705; loss_rec_train: 50.769; loss_kl_train: 23602.763671875; ddpm: 0.838; 
+INFO:train.train_function:iter: 8358246; lr_train: 8.999971409238568e-05; loss: 1.533; loss_rec_train: 51.733; loss_kl_train: 22493.0234375; ddpm: 0.748; 
+INFO:train.train_function:iter: 11153646; lr_train: 8.999961847124644e-05; loss: 1.354; loss_rec_train: 46.538; loss_kl_train: 21054.5234375; ddpm: 0.604; 
+INFO:train.train_function:iter: 13949046; lr_train: 8.999952285017566e-05; loss: 1.130; loss_rec_train: 44.036; loss_kl_train: 19709.79296875; ddpm: 0.450; 
+INFO:train.train_function:iter: 16744446; lr_train: 8.999942722917325e-05; loss: 0.948; loss_rec_train: 43.278; loss_kl_train: 17873.30078125; ddpm: 0.258; 
+INFO:train.train_function:iter: 19539846; lr_train: 8.999933160823928e-05; loss: 0.828; loss_rec_train: 39.888; loss_kl_train: 16695.09375; ddpm: 0.187; 
+INFO:train.train_function:iter: 22335246; lr_train: 8.999923598737372e-05; loss: 0.779; loss_rec_train: 41.323; loss_kl_train: 15781.1796875; ddpm: 0.095; 
+INFO:train.train_function:iter: 25130646; lr_train: 8.999914036657657e-05; loss: 0.685; loss_rec_train: 37.616; loss_kl_train: 15109.890625; ddpm: 0.081; 
+INFO:train.train_function:iter: 27926046; lr_train: 8.999904474584783e-05; loss: 0.666; loss_rec_train: 37.198; loss_kl_train: 14601.1416015625; ddpm: 0.124; 
+INFO:train.train_function:iter: 30721446; lr_train: 8.999894912518749e-05; loss: 0.660; loss_rec_train: 36.519; loss_kl_train: 14251.4130859375; ddpm: 0.054; 
+INFO:train.train_function:iter: 33516846; lr_train: 8.99988535045956e-05; loss: 0.689; loss_rec_train: 38.899; loss_kl_train: 13927.283203125; ddpm: 0.089; 
+INFO:train.train_function:iter: 36312246; lr_train: 8.999875788407208e-05; loss: 0.648; loss_rec_train: 36.096; loss_kl_train: 13661.23046875; ddpm: 0.044; 
+INFO:train.train_function:iter: 39107646; lr_train: 8.999866226361702e-05; loss: 0.632; loss_rec_train: 36.889; loss_kl_train: 13464.732421875; ddpm: 0.071; 
+INFO:train.train_function:iter: 41903046; lr_train: 8.999856664323033e-05; loss: 0.661; loss_rec_train: 38.123; loss_kl_train: 13220.220703125; ddpm: 0.048; 
+INFO:train.train_function:iter: 44698446; lr_train: 8.999847102291208e-05; loss: 0.688; loss_rec_train: 39.820; loss_kl_train: 13019.607421875; ddpm: 0.031; 
+INFO:train.train_function:iter: 47493846; lr_train: 8.999837540266223e-05; loss: 0.566; loss_rec_train: 34.007; loss_kl_train: 12810.212890625; ddpm: 0.050; 
+INFO:train.train_function:iter: 50289246; lr_train: 8.999827978248081e-05; loss: 0.602; loss_rec_train: 35.730; loss_kl_train: 12626.73046875; ddpm: 0.048; 
+INFO:train.train_function:iter: 53084646; lr_train: 8.999818416236778e-05; loss: 0.614; loss_rec_train: 35.806; loss_kl_train: 12463.05859375; ddpm: 0.054; 
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 10000
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 279540000
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 10000
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 279540000
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 10000
+INFO:train.train_function:  Instantaneous batch size per GPU = 1
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 1
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 4472590000
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 2795400
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 2795400
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 10
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 279540
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 8
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 8
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 5590800
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 1
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 1
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 44725900
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 1
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 1
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 44725900
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 1
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 1
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 44725900
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 1
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 1
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 44725900
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 1
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 1
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 44725900
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 1
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 1
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 44725900
+INFO:train.train_function:iter: 44278641; lr_train: 8.999940833741915e-05; loss: 0.003; loss_rec_train: 0.007; loss_kl_train: 246.40029907226562; ddpm: 0.000; 
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 1
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 1
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 44725900
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 2795400
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 100
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 2795400
+INFO:train.train_function:iter: 99; lr_train: 8.999053381883599e-05; loss: 0.018; loss_rec_train: 1.658; loss_kl_train: 247.15505981445312; ddpm: 0.000; 
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:iter: 99; lr_train: 8.968482181692935e-05; loss: 0.042; loss_rec_train: 0.520; loss_kl_train: 247.31808471679688; ddpm: 0.004; 
+INFO:train.train_function:iter: 199; lr_train: 8.936721546786228e-05; loss: 0.041; loss_rec_train: 0.633; loss_kl_train: 247.28102111816406; ddpm: 0.004; 
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:iter: 99; lr_train: 8.968482181692935e-05; loss: 0.024; loss_rec_train: 1.287; loss_kl_train: 247.2042999267578; ddpm: 0.002; 
+INFO:train.train_function:iter: 199; lr_train: 8.936721546786228e-05; loss: 0.036; loss_rec_train: 1.880; loss_kl_train: 247.09854125976562; ddpm: 0.002; 
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
+INFO:train.train_function:***** Running training *****
+INFO:train.train_function:  Num Epochs = 3
+INFO:train.train_function:  Instantaneous batch size per GPU = 16
+INFO:train.train_function:  Total train batch size (w. parallel, distributed & accumulation) = 16
+INFO:train.train_function:  Gradient Accumulation steps = 1
+INFO:train.train_function:  Total optimization steps = 83862
