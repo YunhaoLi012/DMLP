@@ -1,13 +1,26 @@
-from setuptools import find_packages, setup
+from setuptools import setup, find_packages
+
+VERSION = '0.0.10' 
+DESCRIPTION = 'My first Python package'
+LONG_DESCRIPTION = 'My first Python package with a slightly longer description'
 
 setup(
-    name='DMLP',
-    packages=find_packages(include=['DMLP']),
-    version='0.1.0',
-    description='Diffusion model learning platform',
-    author='Yunhao012',
-    install_requires=[],
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest==4.4.1'],
-    test_suite='tests',
+       # 名称必须匹配文件名 'verysimplemodule'
+        name="DMLP", 
+        version=VERSION,
+        author="YunhaoLi, Jieqi Liu",
+        author_email="<youremail@email.com>",
+        description=DESCRIPTION,
+        long_description=LONG_DESCRIPTION,
+        packages=find_packages(),
+        install_requires=[], 
+        keywords=['python', 'first package'],
+        classifiers= [
+            "Development Status :: 3 - Alpha",
+            "Intended Audience :: Education",
+            "Programming Language :: Python :: 2",
+            "Programming Language :: Python :: 3",
+            "Operating System :: MacOS :: MacOS X",
+            "Operating System :: Microsoft :: Windows",
+        ]
 )

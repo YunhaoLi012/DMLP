@@ -1,44 +1,20 @@
 Metadata-Version: 2.1
 Name: DMLP
-Version: 0.0.5
-Summary: Diffusion Model Training Package
-Author: Yunhao012
-Author-email: Yunhao Li <yunhao319016@gmail.com>, Jieqi Liu <example@gmail.com>
-Project-URL: Homepage, https://github.com/YunhaoLi012/DMLP
-Project-URL: Issues, https://github.com/YunhaoLi012/DMLP/issues
+Version: 0.0.10
+Summary: My first Python package
+Home-page: UNKNOWN
+Author: YunhaoLi, Jieqi Liu
+Author-email: <youremail@email.com>
+License: UNKNOWN
+Keywords: python,first package
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Education
+Classifier: Programming Language :: Python :: 2
 Classifier: Programming Language :: Python :: 3
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
-Requires-Python: >=3.8
-Description-Content-Type: text/markdown
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
 License-File: LICENSE.txt
 
-# DMLP
-A library for training diffusion model
+My first Python package with a slightly longer description
 
-#### Log
-1. Perplexity: exponential of loss \
-original: calculated by model_ppl and tokenizer_ppl \
-idea: calculate by trained gpt2 and corresponding tokenizer (self.decoder and self.tokenizer_decoder) \
-question: why they used model_ppl, not even trained
-
-2. apex optimizer and transformer optimizer
-https://huggingface.co/transformers/v2.9.1/main_classes/optimizer_schedules.html
-https://nvidia.github.io/apex/optimizers.html
-
-3. Abstract models: \
-abstract VAE \
-constructor \
-forward \
-abstract DDPM \
-constructor \
-forward \
-sample \
-(in evaluation additonal sample options should be enabled) \
-abstract VAE_DDPM \
-constructor \
-forward
-
-4. Test Multi-GPU trainining 
-Need to check output from VAE_DDPM forward.
-This must match train function
