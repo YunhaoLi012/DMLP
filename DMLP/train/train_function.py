@@ -161,7 +161,9 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
 
             else:
                 loss.backward()
+            
             # loss = torch.mean(loss)
+            
             writer.add_scalar('lr', scheduler.get_last_lr()[0], global_step)
             writer.add_scalar('loss', (tr_loss - logging_loss) / logging_steps, global_step)
             tr_loss += loss.item()
@@ -180,6 +182,7 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
                 
                 global_step += 1
 
+                break
                 if evaluate_during_training and \
                     logging_steps > 0 and global_step % logging_steps == 0 and eval_dataloader != None:
                     

@@ -38,7 +38,7 @@ def condition_f(n):
         return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
 
 def main():
-    batch_size = 128
+    batch_size = 1
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
     
@@ -46,7 +46,7 @@ def main():
     #initialize tokenizer and model
     print("initialize models")
     tokenizer_encoder = AutoTokenizer.from_pretrained("prajjwal1/bert-small")
-    latent_size = 64
+    latent_size = 128
     model_encoder = encoder_model_class.from_pretrained("prajjwal1/bert-small", latent_size=latent_size,
                                                         pad_id=tokenizer_encoder.pad_token_id,local_files_only=False)
 
@@ -71,19 +71,25 @@ def main():
     train_eval_dataset =load_dataset("guangyil/yelp_short_v2")
     eval_dataloader =  DataLoader(train_eval_dataset['test'], num_workers=0, collate_fn=my_collator,batch_size=batch_size)
     train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=batch_size)
+    
 
-    output_dir = "/home/AD/yul080/runs"
+    # output_dir = "/home/AD/yul080/runs"
+    output_dir = "../../out_temp"
+    checkpoint = torch.load('../../ckpts/checkpoints/checkpoint-full-2/training.bin',map_location=torch.device('cpu'))
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     model_vae.apply(weights_init_random)
+    # model_vae.load_state_dict(checkpoint['model_state_dict'], strict=False) 
     # model_vae.to('cuda')   
-    ddpm = DDPM(MLPSkipNet(latent_size), (1e-4, 0.02), 1000, nn.MSELoss(reduction='none'), ddpm_schedule)
+    ddpm = DDPM(MLPSkipNet(latent_size), (1e-4, 0.02), 2000, nn.MSELoss(reduction='none'), ddpm_schedule)
     ddpm.apply(weights_init_random)
+    ddpm_checkpoint = torch.load('../../ckpts/checkpoints/checkpoint-ddpm-2-1/training_ddpm.bin', map_location=torch.device('cpu'))
+    # ddpm.load_state_dict(ddpm_checkpoint['model_state_dict'], strict=False)
     model = VAE_DDPM(model_vae, ddpm,1.0 )
     optimizer = torch.optim.Adam
 
     world_size = 1
     print(world_size)
-    args = (world_size,model, optimizer, train_dataloader,  output_dir, batch_size,condition_f, -1, 5, 
+    args = (world_size,model, optimizer, train_dataloader,  output_dir, batch_size,condition_f, -1, 5000, 
         1,'cuda', True, None, 9e-5, 1e-5, 0.01, 3.0, 0, True, 1,True, True, eval_dataloader, 
           32, 'gpt2', True)
     print("start_training")
