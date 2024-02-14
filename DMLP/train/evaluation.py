@@ -1,5 +1,5 @@
-from .generation import *
-from .reconstruction import *
+from DMLP.train.reconstruction import calc_rec_lgy
+from DMLP.train.generation import calc_ppl_lgy_ddpm
 
 def evaluation(model, eval_dataloader, device, disable_bar, ns=1, \
                sent_length=32, output_dir="output.txt", fp16=False, model_id='gpt2', ppl_eval=True):

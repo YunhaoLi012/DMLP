@@ -1,3 +1,4 @@
-from .train_function import train_vae_ddpm
-from .generation import *
-from .reconstruction import *
+from . import evaluation
+from . import generation
+from . import reconstruction
+from . import train_function

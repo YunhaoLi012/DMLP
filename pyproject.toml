@@ -15,7 +15,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "DMLP"
-version = "0.0.1"
+version = "0.0.5"
 authors = [
   { name="Yunhao Li", email="yunhao319016@gmail.com" },
   {name = "Jieqi Liu", email= "example@gmail.com"}

@@ -1,5 +1,5 @@
 import torch
-from utils import sample_sequence_conditional
+from DMLP.utils.sample import sample_sequence_conditional
 from tqdm import tqdm, trange
 import numpy as np
 from transformers import AutoTokenizer, GPT2TokenizerFast
@@ -74,8 +74,8 @@ def calc_ppl_lgy_ddpm(model_vae, decoder_tokenizer, ns=1, sent_length=32,
     for jj, line in enumerate(generate_text):
         if jj < 10:
             if jj == 0: 
-            #     print('\n\n')
-            # print(line)
+                print('\n\n')
+            print(line)
         split = line.strip().split(' ')
         list_of_references.append(split)
         len_list.append(len(split))

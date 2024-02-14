@@ -7,15 +7,14 @@ from tqdm import tqdm, trange
 from torch.cuda.amp import GradScaler
 # from apex import amp
 import logging
-from .reconstruction import *
-from .generation import *
-
-import sys
-sys.path.append("..")
-from utils import *
+from DMLP.train import *
+from DMLP.utils.ddpm_schedule import *
+from DMLP.utils.random_init import *
+from DMLP.utils.sample import *
+from DMLP.utils.save_checkpoint import *
 import os
 
-from .evaluation import *
+from DMLP.train.evaluation import evaluation
 
 
 def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  output_dir, batch_size,condition_f=lambda x: False, logging_steps = -1,
