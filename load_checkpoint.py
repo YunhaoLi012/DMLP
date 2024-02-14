@@ -27,7 +27,7 @@ class MyCollator(object):
 
 def load():
     local_rank=0
-    batch_size = 16
+    batch_size = 8
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
     #initialize tokenizer and model
