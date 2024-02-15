@@ -7,7 +7,7 @@ import torch
 import os
 
 import torch.multiprocessing as mp
-
+import time
 
 from DMLP.models.my_transformers import MODEL_CLASS
 from DMLP.models.models import VAE, DDPM, MLPSkipNet, TransformerNet,VAE_DDPM
@@ -38,7 +38,9 @@ def condition_f(n):
         return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
 
 def main():
-    batch_size = 1
+
+    batch_size = 32
+
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
     
@@ -75,7 +77,7 @@ def main():
 
     # output_dir = "/home/AD/yul080/runs"
     output_dir = "../../out_temp"
-    checkpoint = torch.load('../../ckpts/checkpoints/checkpoint-full-2/training.bin',map_location=torch.device('cpu'))
+    # checkpoint = torch.load('../../ckpts/checkpoints/checkpoint-full-2/training.bin',map_location=torch.device('cpu'))
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     model_vae.apply(weights_init_random)
     # model_vae.load_state_dict(checkpoint['model_state_dict'], strict=False) 
@@ -86,15 +88,19 @@ def main():
     # ddpm.load_state_dict(ddpm_checkpoint['model_state_dict'], strict=False)
     model = VAE_DDPM(model_vae, ddpm,1.0 )
     optimizer = torch.optim.Adam
-
+    
     world_size = 1
     print(world_size)
-    args = (world_size,model, optimizer, train_dataloader,  output_dir, batch_size,condition_f, -1, 5000, 
+    args = (world_size,model, optimizer, train_dataloader,  output_dir, batch_size,condition_f, -1, 20, 
         1,'cuda', True, None, 9e-5, 1e-5, 0.01, 3.0, 0, True, 1,True, True, eval_dataloader, 
           32, 'gpt2', True)
-    print("start_training")
+    start = time.time()
+    print("start_training: "+f"{start}")
+    
     mp.spawn(train_vae_ddpm,args = args,nprocs=world_size,join=True)
-    print("training_done")
+    end = time.time()
+    print("training_done"+f"{end}")
+    print(f"total: {end-start}")
 
 
 
