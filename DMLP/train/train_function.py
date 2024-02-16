@@ -17,6 +17,7 @@ import os
 from DMLP.train.evaluation import evaluation
 
 
+
 def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  output_dir, batch_size,condition_f=lambda x: False, logging_steps = -1,
           train_epoch = 20, gradient_accumulation_steps = 1, device = 'cpu',
           fp16=False, fp16_opt_level=None, learning_rate=9e-5, adam_epsilon=1e-5,
@@ -36,6 +37,7 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
 
     if evaluate_during_training: all related inputs should be given
     """
+    print("from repo")
     print(local_rank)
     # torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     device = f"cuda:{local_rank}"
@@ -182,7 +184,7 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
                 
                 global_step += 1
 
-                break
+              
                 if evaluate_during_training and \
                     logging_steps > 0 and global_step % logging_steps == 0 and eval_dataloader != None:
                     
@@ -210,3 +212,5 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
 
     writer.close()
     return global_step, tr_loss / global_step, optimizer
+
+
