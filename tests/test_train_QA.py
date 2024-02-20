@@ -1,4 +1,4 @@
-from datasets import load_dataset,concatenate_datasets, Dataset,DatasetDict
+from datasets import load_dataset,concatenate_datasets, Dataset,DatasetDict, load_from_disk
 from transformers import AutoTokenizer
 from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
@@ -24,37 +24,31 @@ from DMLP.train.train_function import train_vae_ddpm
 
 
 class MyCollator(object):
-    def __init__(self, encoder_token, decoder_token, mask_token):
+    def __init__(self, encoder_token, decoder_token):
         self.encoder_token = encoder_token
         self.decoder_token = decoder_token
-        self.mask_token = mask_token
     def __call__(self, batch):
 
-        input_ids_bert = pad_sequence([torch.tensor(self.mask(f['bert_token']), dtype=torch.long) for f in batch],
+        input_ids_bert = pad_sequence([torch.tensor(f['question'], dtype=torch.long) for f in batch],
                                   batch_first=True, padding_value=self.encoder_token)
-        input_ids_gpt = pad_sequence([torch.tensor(f['gpt2_token'], dtype=torch.long) for f in batch],
+        input_ids_gpt = pad_sequence([torch.tensor(f['answer'], dtype=torch.long) for f in batch],
                                     batch_first=True, padding_value=self.decoder_token)
         try:
-            token_lengths = torch.tensor([[len(f['bert_token']), len(f['gpt2_token'])] for f in batch],
+            token_lengths = torch.tensor([[len(f['question']), len(f['answer'])] for f in batch],
                                         dtype=torch.long)
         except:
             token_lengths = torch.zeros((len(batch), 1091))
             for i in range(len(batch)):
-                token_lengths[i, len(batch[i]['gpt2_token'])] = 1
+                token_lengths[i, len(batch[i]['answer'])] = 1
         return (input_ids_bert, input_ids_gpt, token_lengths)
-    
-    def mask(self, x):
-        max_length = len(x)
-        idx = np.random.choice(range(1, max_length-1))
-        x[idx] = self.mask_token
-        return x
+
     
 
 def condition_f(n):
         return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
 
 def main():
-    batch_size = 128
+    batch_size = 8
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
 
@@ -80,26 +74,28 @@ def main():
     model_decoder.resize_token_embeddings(len(tokenizer_decoder))
     bert_pad_token = tokenizer_encoder.pad_token_id
     gpt2_pad_token = tokenizer_decoder.pad_token_id
-    bert_mask_token = tokenizer_encoder.mask_token_id
 
-    my_collator = MyCollator(bert_pad_token, gpt2_pad_token,bert_mask_token)
+
+    my_collator = MyCollator(bert_pad_token, gpt2_pad_token)
     #download data
     print("download data")
-    train_eval_dataset =load_dataset("guangyil/yelp_short_v2")
+    train_eval_dataset =load_from_disk("../Data/qaa")
     eval_dataloader =  DataLoader(train_eval_dataset['test'], num_workers=0, collate_fn=my_collator,batch_size=batch_size)
     train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=batch_size)
 
-    output_dir = "/home/AD/yul080/runs_with_ddpm"
+    # output_dir = "/home/AD/yul080/runs_with_ddpm"
+    output_dir = "../../ckpts/qa_with_ddpm"
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     # model_vae.apply(weights_init_random)
     # model_vae.to('cuda')   
-    ddpm = DDPM(MLPSkipNet(latent_size), (1e-4, 0.02), 1000, nn.MSELoss(reduction='none'), ddpm_schedule)
+    ddpm = DDPM(MLPSkipNet(latent_size), (1e-4, 0.02), 2000, nn.MSELoss(reduction='none'), ddpm_schedule)
     # ddpm.apply(weights_init_random)
-    model = VAE_DDPM(model_vae, ddpm,1.0 )
+    model = VAE_DDPM(model_vae, ddpm, 1.0)
     optimizer = torch.optim.Adam
 
     world_size = 1
-    epochs =2000
+    epochs =50
+
     print(world_size)
     start = time.time()
     args = (world_size,model, optimizer, train_dataloader,  output_dir, batch_size,condition_f, -1, epochs, 
