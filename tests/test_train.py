@@ -77,17 +77,17 @@ def main():
     eval_dataloader =  DataLoader(train_eval_dataset['test'], num_workers=0, collate_fn=my_collator,batch_size=batch_size)
     train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=batch_size)
 
-    output_dir = "/home/AD/yul080/runs"
+    output_dir = "/home/AD/yul080/runs_with_ddpm"
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     # model_vae.apply(weights_init_random)
     # model_vae.to('cuda')   
     ddpm = DDPM(MLPSkipNet(latent_size), (1e-4, 0.02), 1000, nn.MSELoss(reduction='none'), ddpm_schedule)
     # ddpm.apply(weights_init_random)
-    model = VAE_DDPM(model_vae, ddpm,0.0 )
+    model = VAE_DDPM(model_vae, ddpm,1.0 )
     optimizer = torch.optim.Adam
 
     world_size = 1
-    epochs =200
+    epochs =2000
     print(world_size)
     start = time.time()
     args = (world_size,model, optimizer, train_dataloader,  output_dir, batch_size,condition_f, -1, epochs, 
