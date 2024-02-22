@@ -48,7 +48,7 @@ def condition_f(n):
         return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
 
 def main():
-    batch_size = 8
+    batch_size = 128
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
 
@@ -84,7 +84,11 @@ def main():
     train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=batch_size)
 
     # output_dir = "/home/AD/yul080/runs_with_ddpm"
+<<<<<<< HEAD
     output_dir = "../../ckpts/qa_without_ddpm"
+=======
+    output_dir = "/home/AD/yul080/qa_with_ddpm"
+>>>>>>> ef499a1487345976c9553f4664be1eb8a8bbe0ac
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     # model_vae.apply(weights_init_random)
     # model_vae.to('cuda')   
@@ -94,7 +98,7 @@ def main():
     optimizer = torch.optim.Adam
 
     world_size = 1
-    epochs =50
+    epochs =2000
 
     print(world_size)
     start = time.time()
@@ -112,5 +116,5 @@ def main():
 
 if __name__ == "__main__":
     os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "10086"
+    os.environ["MASTER_PORT"] = "29500"
     main()
