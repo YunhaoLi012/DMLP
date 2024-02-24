@@ -1,10 +1,13 @@
 # DMLP
-
 ---
+layout: default
 authors:
-  - Jieqi Liu <jil146@ucsd.edu>
-  - Yunhao Li <yul080@ucsd.edu>
-  - Zhiting Hu <zhh019@ucsd.edu>
+  - name: Jieqi Liu
+    email: jil146@ucsd.edu
+  - name: Yunhao Li
+    email: yul080@ucsd.edu
+  - name: Zhiting Hu
+    email: zhh019@ucsd.edu
 ---
 
 DMLP is a versatile Python library designed for the training, evaluation, and development of text diffusion models. This library focuses on an architecture synthesizing variational autoencoders (VAEs) with diffusion process, which enables text representation, reconstruction, and generation in one model. DMLP comes equipped with pre-defined functions and classes, offering users a platform to implement, experiment, and compare customized text diffusion models.
