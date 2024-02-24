@@ -14,6 +14,8 @@ It provides:
   - [On Linux](#on-linux)
 - [Tutorial](#Tutorial)
 - [Report](#Report)
+- [Documentation](#Documentation)
+- [Authors](#Authors)
 
 
 ## Introduction
@@ -44,4 +46,11 @@ In order to Use our library for new datasets/new tasks, here is what you need to
 
 ## Report
 The full report can be accessed from: 
+
+## Documentation
+The full documentation can be accessed from: 
+Here is an outline:
+
+## Authors
+
 
