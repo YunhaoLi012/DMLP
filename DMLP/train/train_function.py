@@ -37,8 +37,6 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
 
     if evaluate_during_training: all related inputs should be given
     """
-    print("from repo")
-    print(local_rank)
     # torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     device = f"cuda:{local_rank}"
     if not os.path.exists(output_dir):
