@@ -16,6 +16,13 @@ It provides:
 - [Report](#Report)
 
 
+## Introduction
+----------------------
+Diffusion models are generative models originally designed for image generation, interpolation, and reconstruction. Nowadays, combining with variational autoencoder (VAE), diffusion models are extended to natural language processing (NLP), and text-diffusion has become a novel challenging field to explore. In this capstone project, we will introduce Diffusion Model Learning Platform (DMLP), a versatile Python library designed for the training, evaluation, and development of text diffusion models.
+DMLP is based on the Joint Autoencoding Diffusion (JEDI) proposed in "GENERATION, RECONSTRUCTION, REPRESENTATION
+ALL-IN-ONE: A JOINT AUTOENCODING DIFFUSION MODEL". JEDI was an architecture designed for generation, reconstruction, and representation in image, text, and gene fields, and DMLP focuses on the text-diffusion component - generation and reconstruction of sentences.
+DMLP modularizes the JEDI model and allows a flexible combination of different VAE models and diffusion process. Both a predefined JEDI structure and abstract models are provided for customized training tasks. Moreover, DMLP contains a complete training, evaluation, and saving pipeline that reduces implementation workload. The significance of DMLP lies in its versatility, fostering innovation and exploration in the evolving field of text-diffusion. Its comprehensive functions further streamlines the development process, making DMLP a resource for advancing research and applications in NLP.
+
 
 <!-- tocstop -->
 
@@ -37,3 +44,4 @@ In order to Use our library for new datasets/new tasks, here is what you need to
 
 ## Report
 The full report can be accessed from: 
+
