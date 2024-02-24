@@ -13,6 +13,7 @@ It provides:
 - [Installation](#installation)
   - [On Linux](#on-linux)
 - [Tutorial](#Tutorial)
+- [Report](#Report)
 
 
 
@@ -31,3 +32,8 @@ We provide a demo file in at https://github.com/YunhaoLi012/DMLP/blob/torchamp/t
 CUDA_VISIBLE_DEVICES=0 torchrun test_train.py
 ```
 Make sure you are in the folder which contains test_train.py file. 
+
+In order to Use our library for new datasets/new tasks, here is what you need to do:
+
+## Report
+The full report can be accessed from: 
