@@ -13,8 +13,8 @@ It provides:
 - [Installation](#installation)
   - [On Linux](#on-linux)
 - [Tutorial](#tutorial)
-- [Report](#teport)
-- [Documentation](#tocumentation)
+- [Report](#report)
+- [Documentation](#documentation)
 - [Authors](#authors)
 
 <!-- tocstop -->
