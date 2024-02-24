@@ -17,6 +17,7 @@ It provides:
 - [Documentation](#Documentation)
 - [Authors](#Authors)
 
+<!-- tocstop -->
 
 ## Introduction
 ----------------------
@@ -24,9 +25,6 @@ Diffusion models are generative models originally designed for image generation,
 DMLP is based on the Joint Autoencoding Diffusion (JEDI) proposed in "GENERATION, RECONSTRUCTION, REPRESENTATION
 ALL-IN-ONE: A JOINT AUTOENCODING DIFFUSION MODEL". JEDI was an architecture designed for generation, reconstruction, and representation in image, text, and gene fields, and DMLP focuses on the text-diffusion component - generation and reconstruction of sentences.
 DMLP modularizes the JEDI model and allows a flexible combination of different VAE models and diffusion process. Both a predefined JEDI structure and abstract models are provided for customized training tasks. Moreover, DMLP contains a complete training, evaluation, and saving pipeline that reduces implementation workload. The significance of DMLP lies in its versatility, fostering innovation and exploration in the evolving field of text-diffusion. Its comprehensive functions further streamlines the development process, making DMLP a resource for advancing research and applications in NLP.
-
-
-<!-- tocstop -->
 
 ## Installation
 ----------------------
