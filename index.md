@@ -12,10 +12,10 @@ It provides:
 
 - [Installation](#installation)
   - [On Linux](#on-linux)
-- [Tutorial](#Tutorial)
-- [Report](#Report)
-- [Documentation](#Documentation)
-- [Authors](#Authors)
+- [Tutorial](#tutorial)
+- [Report](#teport)
+- [Documentation](#tocumentation)
+- [Authors](#authors)
 
 <!-- tocstop -->
 
