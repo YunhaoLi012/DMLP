@@ -3,17 +3,4 @@ plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
 title: DMLP
 description: Diffusion Model Learning Platform - A library for training text diffusion models
-authors:
-  Jieqi Liu:
-    name: Jieqi Liu
-    display_name: Jieqi Liu
-    email: jil146@ucsd.edu
-  Yunhao Li:
-    name: Yunhao Li
-    display_name: Yunhao Li
-    email: yul080@ucsd.edu
-  Zhiting Hu:
-    name: Zhiting Hu
-    display_name: Zhiting Hu
-    email: zhh019@ucsd.edu
 
