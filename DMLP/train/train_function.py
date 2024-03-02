@@ -200,7 +200,7 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
                             
                     for key, value in results.items():
                         writer.add_scalar('eval_{}'.format(key), value, global_step)
-                        logger.info('eval_{}'.format(key), value, global_step)
+                        logger.info('eval_{} {}'.format(key, value))
                     if results['bleu'] > max_bleu_score:
                         max_bleu_score = results['bleu']
                         if save:
