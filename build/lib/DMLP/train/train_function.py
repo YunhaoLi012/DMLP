@@ -37,8 +37,6 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
 
     if evaluate_during_training: all related inputs should be given
     """
-    print("from repo")
-    print(local_rank)
     # torch.cuda.set_device(local_rank) # set cuda to local rank; should be discouraged
     device = f"cuda:{local_rank}"
     if not os.path.exists(output_dir):
@@ -201,8 +199,8 @@ def train_vae_ddpm(local_rank, world_size, model, optimizer, train_dataloader,  
                                 output_dir=output_dir, sent_length=sent_length, fp16=fp16, model_id=model_id, ppl_eval=ppl_eval)
                             
                     for key, value in results.items():
-                        writer.add_scalar('eval_{}'.format(key), value.item(), global_step)
-                        logger.info('eval_{}'.format(key), value.item(), global_step)
+                        writer.add_scalar('eval_{}'.format(key), value, global_step)
+                        logger.info('eval_{}'.format(key), value, global_step)
                     if results['bleu'] > max_bleu_score:
                         max_bleu_score = results['bleu']
                         if save:

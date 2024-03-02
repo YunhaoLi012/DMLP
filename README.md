@@ -28,7 +28,7 @@ It provides:
 ----------------------
 ### On Linux
 ```
-pip install -i https://test.pypi.org/simple/ DMLP==0.0.1
+pip install DMLP==1.0.0
 ```
 
 ## Tutorial

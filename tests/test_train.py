@@ -45,7 +45,7 @@ def condition_f(n):
         return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
 
 def main():
-    batch_size = 128
+    batch_size = 8
     encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
 
 
@@ -79,7 +79,7 @@ def main():
     eval_dataloader =  DataLoader(train_eval_dataset['test'], num_workers=0, collate_fn=my_collator,batch_size=batch_size)
     train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=batch_size)
 
-    output_dir = "/home/AD/yul080/DMLP_test_with_ddpm"
+    output_dir = "/home/AD/yul080/DMLP_test_with_ddpm_bs8"
     model_vae = VAE(model_encoder, model_decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir)
     # checkpoint = torch.load('../../ckpts/checkpoints/checkpoint-full-2/training.bin',map_location=torch.device('cpu'))
     # model_vae.load_state_dict(checkpoint['model_state_dict'], strict=False) 
@@ -109,5 +109,5 @@ def main():
 
 if __name__ == "__main__":
     os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "29500"
+    os.environ["MASTER_PORT"] = "29501"
     main()

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: DMLP
-Version: 0.0.14
+Version: 1.0.1
 Summary: My first Python package
 Home-page: UNKNOWN
 Author: YunhaoLi, Jieqi Liu
@@ -47,7 +47,7 @@ It provides:
 ----------------------
 ### On Linux
 ```
-pip install -i https://test.pypi.org/simple/ DMLP==0.0.1
+pip install DMLP==1.0.0
 ```
 
 ## Tutorial
