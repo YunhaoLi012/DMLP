@@ -1,11 +1,11 @@
 # DMLP
 DMLP is a python library for training diffusion model
-- **Website: https://yunhaoli012.github.io/DMLP/** 
-- **Documentation:** 
-- **Mailing list:** 
-- **Source code:** 
-- **Contributing:** 
-- **Bug reports:** 
+- **Website: https://yunhaoli12138.github.io/DMLP/** 
+- **Documentation: https://yunhaoli12138.github.io/DMLP/docs/** 
+- **Mailing list: yul080@ucsd.edu , jil146@ucsd.edu** 
+- **Source code: https://github.com/YunhaoLi12138/DMLP** 
+- **Contributing: YunhaoLi12138, DDDyylan** 
+- **Bug reports: https://github.com/YunhaoLi12138/DMLP/issues** 
 
 It provides:
 
