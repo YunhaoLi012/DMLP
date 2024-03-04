@@ -10,8 +10,8 @@ redirect_from:
 ---
 
 # About 
-DMLP is the senior capstone project by data science students [Yunhao Li](https://github.com/YunhaoLi12138) and [Jieqi Liu](www.google.com) from University of California, San Diego. To learn more about the project, click the following links to read our project report and project presentation poster.
-### [Project Report](www.google.com)
+DMLP is the senior capstone project by data science students [Yunhao Li](https://github.com/YunhaoLi12138) and [Jieqi Liu](https://github.com/DDDyylan) from University of California, San Diego. To learn more about the project, click the following links to read our project report and project presentation poster.
+### [Project Report](https://www.google.com)
 ### [Project Presentation Poster](www.google.com)
 ### [Project Repository](www.google.com)
 
