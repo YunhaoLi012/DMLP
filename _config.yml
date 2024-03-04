@@ -42,10 +42,13 @@ logo:                  /assets/img/HDSI-UCSD-Image.png
 # This should be the same author as first entry in `_data/authors.yml`.
 author:
   # Used by `jekyll-feed`:
-  name:                <Jieqi> <Liu>
-  email:               <jil146@ucsd.edu>
+  name:                <Yunhao> <Li>
+  email:               <yul080@ucsd.edu>
   # # Used by `jekyll-seo-tag`:
   # twitter:             <username>
+author2:
+  name:                <Jieqi> <Liu>
+  email:               <jil146@ucsd.edu>
 
 # Add links to the sidebar.
 menu:

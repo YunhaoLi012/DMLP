@@ -9,7 +9,7 @@ author1:
   # Used at the bottom of each page and at the top of the `about` layout
   # Markdown enabled, can use multiple paragraphs (enabled by `|`)
   about:             |
-    1234
+    yul080@ucsd.edu
 
   # This photo will be used in the about section
   picture:
@@ -68,7 +68,7 @@ author2:
   name:              <Jieqi> <Liu>
   email:             <jil146@ucsd.edu>
   about:             |
-      1234
+      jil146@ucsd.edu
 
   # This photo will be used in the about section
   picture:
