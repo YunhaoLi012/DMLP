@@ -17,7 +17,6 @@ It provides:
 
 
 ## Installation
-----------------------
 ```
 pip install DMLP
 ```
