@@ -14,14 +14,7 @@ It provides:
 
 
    
-<!-- toc -->
 
-- [Installation](#installation)
-- [Tutorial](#Tutorial)
-
-
-
-<!-- tocstop -->
 
 ## Installation
 ----------------------
