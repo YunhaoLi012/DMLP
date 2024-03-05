@@ -24,4 +24,56 @@ from DMLP.models.my_transformers import MODEL_CLASS
 print(MODEL_CLASS)
 ```
 
-###
+Next we need to decide which model we want to use to construct VAE. In our example, we use ```BertForLatentConnectorAVG``` and ```GPT2ForLatentConnectorNew``` for encoder and decoder. Runs the following code to initialize and download pretrained model weigths from huggingface. We also need to select the corresponding tokenizer to tokenize our data base on the model selected.
+
+```
+### Define Hyperparameter
+latent_size = 128
+
+### Select tokenizer
+tokenizer_encoder = AutoTokenizer.from_pretrained("prajjwal1/bert-small")
+tokenizer_decoder = AutoTokenizer.from_pretrained("gpt2-xl")
+
+### Select/Initialize model class
+encoder_model_class = MODEL_CLASS['BertForLatentConnectorAVG']
+decoder_model_class = MODEL_CLASS['GPT2ForLatentConnectorNew']
+
+### Download Model Weights
+model_encoder = encoder_model_class.from_pretrained("prajjwal1/bert-small", latent_size=latent_size,
+                                                        pad_id=tokenizer_encoder.pad_token_id,local_files_only=False)
+
+model_decoder = decoder_model_class.from_pretrained("gpt2-xl", latent_size=latent_size,
+                                                            latent_as_gpt_emb=True,
+                                                            latent_as_gpt_memory=True,local_files_only=False)
+
+```
+
+Next we will download preprocessed data for training. We use Yelp Review Dataset(Shen et al., 2017; Li et al., 2018) to train our model. 
+```
+### Define Collate function
+class MyCollator(object):
+    def __init__(self, encoder_token, decoder_token):
+        self.encoder_token = encoder_token
+        self.decoder_token = decoder_token
+    def __call__(self, batch):
+        input_ids_bert = pad_sequence([torch.tensor(f['bert_token'], dtype=torch.long) for f in batch],
+                                  batch_first=True, padding_value=self.encoder_token)
+        input_ids_gpt = pad_sequence([torch.tensor(f['gpt2_token'], dtype=torch.long) for f in batch],
+                                    batch_first=True, padding_value=self.decoder_token)
+        try:
+            token_lengths = torch.tensor([[len(f['bert_token']), len(f['gpt2_token'])] for f in batch],
+                                        dtype=torch.long)
+        except:
+            token_lengths = torch.zeros((len(batch), 1091))
+            for i in range(len(batch)):
+                token_lengths[i, len(batch[i]['gpt2_token'])] = 1
+        return (input_ids_bert, input_ids_gpt, token_lengths)
+
+bert_pad_token = tokenizer_encoder.pad_token_id
+gpt2_pad_token = tokenizer_decoder.pad_token_id
+my_collator = MyCollator(bert_pad_token, gpt2_pad_token)
+
+### Download 
+```
+
+
