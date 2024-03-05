@@ -96,4 +96,15 @@ eval_dataloader =  DataLoader(train_eval_dataset['test'], num_workers=0, collate
 train_dataloader = DataLoader(train_eval_dataset['train'], num_workers=0, collate_fn=my_collator, batch_size=batch_size)
 ```
 
-Now we have arrived to the final step where we need to put everything together and
+Now we have arrived to the final step where we can put everything together and start training. Import training function from DMLP train module.
+```
+from DMLP.train.train_function import train_vae_ddpm
+### import torch multiprocessing module for multi-gpu training
+import torch.multiprocessing as mp
+
+### Define optimizer and hyperparameters for training
+optimizer = torch.optim.Adam
+epochs = 2000
+
+
+```
