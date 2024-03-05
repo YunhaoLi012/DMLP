@@ -144,4 +144,4 @@ We are now ready to train a text diffusion model for text reconstruction and gen
 
 
 ### Tensorboard
-
+We can also see visualization of evaluation metrics from tensorboard using following command
