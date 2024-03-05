@@ -140,4 +140,8 @@ mp.spawn(train_vae_ddpm,args = args,nprocs=world_size,join=True)
         
 ```
 
+We are now ready to train a text diffusion model for text reconstruction and generation. It will store trained model weights and loss history in the output directory.
+
+
+### Tensorboard
 
