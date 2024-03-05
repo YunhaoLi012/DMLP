@@ -102,9 +102,42 @@ from DMLP.train.train_function import train_vae_ddpm
 ### import torch multiprocessing module for multi-gpu training
 import torch.multiprocessing as mp
 
+### Define conditional function for checkpoint purpose
+def condition_f(n):
+        return ('linear' in n or 'wte' in n or 'decoder.transformer.h.0' in n or 'encoder' in n)
+
 ### Define optimizer and hyperparameters for training
 optimizer = torch.optim.Adam
 epochs = 2000
+logging_steps = -1
+gradient_accumulation_step = 1
+device = "cuda"
+fp16 = True
+fp16_opt_level=None
+condition_f = condition_f
+lr = 9e-5
+adam_epsilon = 1e-5
+lr_end_multiplier = 0.01
+power = 3.0
+warmup_step=0
+disable_bar = True
+max_grad_norm = 1
+save = True
+evaluate_during_training = True
+sent_length = 32
+model_id = 'gpt2'
+ppl_eval = True
 
+#path for directory that saves training results
+output_dir  = /path/to/checkpoint/dir
 
+### Construct multiprocessing wrappers for multi-gpu training
+world_size = 1 #num of gpu use for training
+args = (world_size,model, optimizer, train_dataloader,  output_dir, batch_size,condition_f, logging_steps, epochs, 
+        gradient_accumulation_step,device, fp16, fp16_opt_level, lr, adam_epsilon, lr_end_multiplier, power, warmup_step, disable_bar, max_grad_norm, save, evaluate_during_training, eval_dataloader, 
+          sent_length, model_id, ppl_eval)
+mp.spawn(train_vae_ddpm,args = args,nprocs=world_size,join=True)
+        
 ```
+
+
