@@ -146,3 +146,5 @@ We are now ready to train a text diffusion model for text reconstruction and gen
 ### Tensorboard
 We can also see visualization of evaluation metrics from tensorboard using following command
 1. download tensorflow by `pip install tensorflow`
+2. In your terminal, run `tensorboard --logitdir=path_to_your+tensorboard`
+3. You can access results from localhost
