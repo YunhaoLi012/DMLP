@@ -19,3 +19,6 @@ pip install DMLP
 
 ## Tutorial
 The detailed tutorial can be found on website: https://yunhaoli12138.github.io/DMLP/tutorial/
+
+## Reference
+Codes and model architecture referred from: https://github.com/guangyliu/AE_diffusion.git
