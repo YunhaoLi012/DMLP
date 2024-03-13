@@ -79,7 +79,7 @@ Base class for Denoising Diffusion Probabilistic Model(DDPM). Your models should
 
 An example of usage can be found [here](https://github.com/YunhaoLi12138/DMLP/blob/main/DMLP/models/models.py)
 
-### VAE DDPM abs
+### VAE DDPM abs <small>[[source]](https://github.com/YunhaoLi12138/DMLP/blob/main/DMLP/models/abstract_models.py)<small>
 > ```Class DMLP.abstract_models.VAE_DDPM_Abs(model_vae, ddpm, ddpm_weight, *args, **kwargs) ```
 
 Base class for the complete VAE_DDPM structure model. Combine initialized VAE and DDPM and form a new VAE_DDPM object.
