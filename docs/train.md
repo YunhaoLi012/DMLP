@@ -12,6 +12,7 @@ sitemap: false
 - [Evaluation](#evaluation)
     - [calc_rec_lgy](#calc_rec_lgy)
     - [calc_ppl_lgy_ddpm](#calc_ppl_lgy_ddpm)
+    - [evaluation](#evaluation)
 
 
 ## Train
@@ -78,7 +79,8 @@ BLEU: bleu score
 ```
 
 ### calc_ppl_lgy_ddpm
-`from DMLP.train.reconstruction import calc_ppl_lgy_ddpm`
+Generation evaluation:
+`from DMLP.train.generation import calc_ppl_lgy_ddpm`
 
 ```
 __Args__
@@ -96,9 +98,36 @@ ppl_eval=True: calculate perplexity or not
 
 __Return__
 A dictionary for different evaluations:
-  'ppl': perplexity
+  'ppl': perplexity (calculated only if ppl_eval=True)
   'sbleu': bleu score refering other sentences (better low)
   'length': mean sentence length
   'norm_z': mean of normalized latent z
-  'ppl_sbleu': perplexity + bleu score
+  'ppl_sbleu': perplexity + bleu score (calculated only if ppl_eval=True)
+```
+
+### evaluation
+Reconstruction + Generation all together
+`from DMLP.train.evaluation import evaluation`
+
+```
+__Args__
+model: VAE_DDPM model
+eval_dataloader: evaluation data
+device: cpu or gpu
+disable_bar: display tqdm bar or not
+ns=1: number of iterations in generation
+sent_length=32: sentence length for generation
+output_dir="output.txt": output directory to save example output
+fp16=False: useless now
+model_id='gpt2': model id to calculate perplexity
+ppl_eval=True: calcualte perplexity or not 
+
+__Return__
+A dictionary for different evaluations:
+  'bleu': bleu score for generation
+  'ppl': perplexity (calculated only if ppl_eval=True)
+  'sbleu': bleu score refering other sentences (better low)
+  'length': mean sentence length
+  'norm_z': mean of normalized latent z
+  'ppl_sbleu': perplexity + bleu score (calculated only if ppl_eval=True)
 ```
