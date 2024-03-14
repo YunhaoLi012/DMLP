@@ -16,7 +16,8 @@ sitemap: false
 
 ## Train
 The training pipe line is writted in the function `train_vae_ddpm`. \
-The function can be imported by `from DMLP.train.train_function import train_vae_ddpm`
+The function can be imported by `from DMLP.train.train_function import train_vae_ddpm`. \
+The training pipeline will output a tensorboard logging with all the evaluation results.
 
 ### train_vae_ddpm
 ```
@@ -48,6 +49,11 @@ __Args__
   sent_length=32: sentence length for generation
   model_id='gpt2': model to evaluate sentence generation perplexity; gpt by default
   ppl_eval=True: evaluate perplexity or not
+
+__Return__
+global_step: global iteration
+tr_loss / global_step: average loss
+optimizer: final optimizer
 ```
 
 ## Evaluation
@@ -55,5 +61,44 @@ __Args__
 The evaluation process contains two parts: reconstruction by `calc_rec_lgy` and generation by `calc_ppl_lgy_ddpm`.
 
 ### calc_rec_lgy
+Reconstruction evaluation:
+`from DMLP.train.reconstruction import calc_rec_lgy`
+
+```
+__Args__
+model_vae: VAE module of model
+encoder_tokenizer: encoder tokenizer
+decoder_tokenizer: decoder tokenizer
+eval_dataloader: evaluation data
+device: device for model
+disable_bar: diplay tqdm bar or not
+
+__Return__
+BLEU: bleu score
+```
 
 ### calc_ppl_lgy_ddpm
+`from DMLP.train.reconstruction import calc_ppl_lgy_ddpm`
+
+```
+__Args__
+model_vae: VAE module
+decoder_tokenizer: decoder tokenizer
+ns=1: number of iterations
+sent_length=32: sentence length
+ddpm=None: DDPM module
+device='cpu': device
+output_dir = "output.txt": output directory to save example output
+disable_bar=True: display tqdm bar or not
+fp16=False: useless now
+model_id='gpt2': model id to calculate perplexity
+ppl_eval=True: calculate perplexity or not
+
+__Return__
+A dictionary for different evaluations:
+  'ppl': perplexity
+  'sbleu': bleu score refering other sentences (better low)
+  'length': mean sentence length
+  'norm_z': mean of normalized latent z
+  'ppl_sbleu': perplexity + bleu score
+```
