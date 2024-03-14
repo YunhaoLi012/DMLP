@@ -17,13 +17,7 @@ and usage.
     - [VAE](#vae)
     - [DDPM](#ddpm)
     - [VAE_DDPM](#vae-ddpm)
-    - [TimeSiren](#timesiren)
-    - [ResidualLinear](#residuallinear)
-    - [LinearModel](#linearmodel)
-    - [timestep_embedding](#timestep-embedding)
-    - [TransformerNet](#transformernet)
     - [MLPSkipNet](#mlpskipnet)
-    - [MLPNAct](#MLPNAct)
 - [My Transformers](#my-transformer)
 
 # Abstract Models
@@ -32,7 +26,7 @@ upon these abstract classes. Users can also implement their own models with our 
 import these classes with ```from DMLP.models.abstract_models import *```. The following section details each
 of the abstract classes and abstract methods they contain.
 
-### VAE abs <small> [[source]](https://github.com/YunhaoLi12138/DMLP/blob/main/DMLP/models/abstract_models.py)<small>
+### VAE abs
 > ```Class DMLP.abstract_models.VAE_abs(encoder, decoder, *args, device=None,**kwargs) ``` 
 
 Base class for variational auto-encoder. Your models should be a subclass of this class. 
@@ -66,7 +60,7 @@ class VAE(VAE_Abs):
 
 
 
-### DDPM abs <small>[[source]](https://github.com/YunhaoLi12138/DMLP/blob/main/DMLP/models/abstract_models.py)<small>
+### DDPM abs
 > ```Class DMLP.abstract_models.DDPM_abs(eps_model, betas, n_T, criterion, ddpm_schedule, *args, **kwargs) ```
 
 Base class for Denoising Diffusion Probabilistic Model(DDPM). Your models should be a subclass of this class
@@ -79,7 +73,7 @@ __Args__
 
 An example of usage can be found [here](https://github.com/YunhaoLi12138/DMLP/blob/main/DMLP/models/models.py)
 
-### VAE DDPM abs <small>[[source]](https://github.com/YunhaoLi12138/DMLP/blob/main/DMLP/models/abstract_models.py)<small>
+### VAE DDPM abs
 > ```Class DMLP.abstract_models.VAE_DDPM_Abs(model_vae, ddpm, ddpm_weight, *args, **kwargs) ```
 
 Base class for the complete VAE_DDPM structure model. Combine initialized VAE and DDPM and form a new VAE_DDPM object.
@@ -115,7 +109,7 @@ class VAE_DDPM(VAE_DDPM_Abs):
 # Models
 This module provides implementation of default models for users to use out of the box.
 
-### VAE <small>[[source]](https://github.com/YunhaoLi12138/DMLP/blob/main/DMLP/models/models.py)<small>
+### VAE
 > ```Class DMLP.models.models.VAE(encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=None)```
 
 Implementation of default variational autoencoder with transformer encoder and decoder. 
@@ -140,7 +134,7 @@ __Variables__
 > __Parameters__:  
     inputs: encoder tokenized text  
     labels: decoder toeknized text  
-> __Returns__:  
+> __Return__:  
     loss_rec: Loss between generated text and target text
     loss_kl: KL distance between generated text and the diffusion model
     loss: loss_rec / sentence length
@@ -149,22 +143,66 @@ __Variables__
 
 
 ### DDPM
+> ```Class DMLP.models.models.DDPM(eps_model, betas, n_T, criterion, ddpm_schedule)```
+Implementation of default DDPM. 
+
+__Args__  
+  eps_model: $$P_{\theta}$$, Model for backward denoising process, should be some types of neural network  
+  betas: Parameters for ddpm scheduler  
+  n_t: Number of steps for diffusion/denoising  
+  criterion: Objective function for calculating the diffusion loss  
+  ddpm_schedule: scheduler that Returns pre-computed schedules for DDPM sampling, training process. [reference](utils.md)  
+
+__Variables__  
+  ```forward(x,mu)```  Makes forward diffusion x_t, and tries to guess epsilon value from x_t using eps_model.
+> __Parameters__:  
+  x: latent representation from encoder  
+  mu: mean of latent representation distribution from encoder  
+> __Return__:  
+    loss: loss between ddpm prediction $$z_0$$ and actual $$x_0$$  
+
+```sample(n_sample, size, device, fp16=False)```  Generate latent representation using denoising process  
+> __Args__  
+  n_sample: number of sentence to generate  
+  size: length of the sentence  
+  device:  GPU or CPU  
+  fp16: whether compute at lower precision  
+
+> __Return__  
+    x_i: generated sentence latent representation
 
 ### VAE DDPM
+> ```Class DMLP.models.models.VAE_DDPM(model_vae, ddpm, ddpm_weight)```  
+Implementation of the Complete VAE_DDPM model.  
 
-### Time Siren
+__Args__  
+  model_vae: Variational Autoencoder  
+  ddpm: DDPM  
+  ddpm_weight: hyperparameter $$\alpha$$ that adjust weight of ddpm loss in the total loss.  
+  <div align="center"> $$\textbf{Loss} = \textbf{reconstruction loss} + \alpha \cdot \textbf{ddpm loss}$$</div>  
 
-### Residual Linear
-
-### Linear Model
-
-### Timestep Embedding
-
-### Transformernet
+__Variables__  
+```forward(inputs, labels)```  Forward Computation of VAE_DDPM.  
+> __Parameters__:  
+  inputs: input text tokens  
+  labels: output text tokens   
+> __Return__:  
+    All outputs from VAE and DDPM. For details check above description
 
 ### MLPSKipNet
+> ```Class DMLP.models.models.MLPSkipNet(latent_dim)```  
+Implementation of MLP with skip connection. Neural network that mimic $$q_{\theta}$$ in the forward process.
+__Args__  
+  latent_dim: latent representation size
 
-### MLPNACT
+__Variables__  
+```forward(x,t,z_sem=None)``` Forward computation of MLPskipNet.  
+> __Parameters__:  
+  x: sampled x_t  
+  t: number of diffusion steps  
+
+> __Return__:  
+  h: Latent space representation of generated text
 
 
 # My Transformers
