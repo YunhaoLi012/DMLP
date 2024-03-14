@@ -36,7 +36,7 @@ of the abstract classes and abstract methods they contain.
 > ```Class DMLP.abstract_models.VAE_abs(encoder, decoder, *args, device=None,**kwargs) ``` 
 
 Base class for variational auto-encoder. Your models should be a subclass of this class. 
-> __Args__  
+__Args__  
   encoder: model use to encode input text into latent space
   decoder: model use to decode latent space representation into text
 
@@ -70,7 +70,7 @@ class VAE(VAE_Abs):
 > ```Class DMLP.abstract_models.DDPM_abs(eps_model, betas, n_T, criterion, ddpm_schedule, *args, **kwargs) ```
 
 Base class for Denoising Diffusion Probabilistic Model(DDPM). Your models should be a subclass of this class
-> __Args__  
+__Args__  
   eps_model: $$P_{\theta}$$, Model for backward denoising process, should be some types of neural network  
   betas: Parameters for ddpm scheduler  
   n_t: Number of steps for diffusion/denoising  
@@ -84,7 +84,7 @@ An example of usage can be found [here](https://github.com/YunhaoLi12138/DMLP/bl
 
 Base class for the complete VAE_DDPM structure model. Combine initialized VAE and DDPM and form a new VAE_DDPM object.
 
-> __Args__  
+__Args__  
   model_vae: Initialized Variational Auto Encoder, should be a subclass of VAE_Abs  
   ddpm: Initialized DDPM, should be a subclass of DDPM_Abs
   ddpm_weight: hyperparameter $$\alpha$$ that adjust weight of ddpm loss in the total loss.  
@@ -115,7 +115,38 @@ class VAE_DDPM(VAE_DDPM_Abs):
 # Models
 This module provides implementation of default models for users to use out of the box.
 
-### VAE
+### VAE <small>[[source]](https://github.com/YunhaoLi12138/DMLP/blob/main/DMLP/models/models.py)<small>
+> ```Class DMLP.models.models.VAE(encoder, decoder, tokenizer_encoder, tokenizer_decoder, latent_size, output_dir, device=None)```
+
+Implementation of default variational autoencoder with transformer encoder and decoder. 
+
+__Args__  
+  encoder: model use to encode input text into latent space  
+  decoder: model use to decode latent space representation into text  
+  tokenizer_encoder: tokenizer for encoder to encode text to tokens  
+  tokenizer_decoder: tokenizer for decoder to decode tokens to text  
+  latent_size: hyperparmeters for latent size representation  
+  output_dir: directory to save checkpoints   
+
+__Variables__  
+  ```reparametrized(mu, logvar, nsamples)```  sample from posterior Gaussian family
+> __Parameters__:  
+    mu: Tensor, Mean of gaussian distribution with shape (batch, nz)  
+    logvar: Tensor, logvar of gaussian distibution with shape (batch, nz)  
+> __Returns__:  
+    Tensor, Sampled z with shape (batch,nz)  
+
+```forward(inputs, labels)``` Define forward computation of VAE and compute reconstruction losses
+> __Parameters__:  
+    inputs: encoder tokenized text  
+    labels: decoder toeknized text  
+> __Returns__:  
+    loss_rec: Loss between generated text and target text
+    loss_kl: KL distance between generated text and the diffusion model
+    loss: loss_rec / sentence length
+    latent_z: latent representation of input text
+    mu: Tensor, Mean of gaussian distribution with shape (batch, nz)  
+
 
 ### DDPM
 
