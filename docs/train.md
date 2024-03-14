@@ -52,6 +52,8 @@ __Args__
 
 ## Evaluation
 
+The evaluation process contains two parts: reconstruction by `calc_rec_lgy` and generation by `calc_ppl_lgy_ddpm`.
+
 ### calc_rec_lgy
 
 ### calc_ppl_lgy_ddpm
