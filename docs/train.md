@@ -9,7 +9,7 @@ sitemap: false
 - [Train](#train)
     - [train_vae_ddpm](#train_vae_ddpm)
 
-- [Evaluation](#evaluation)
+- [Evaluation_Functions](#evaluation_functions)
     - [calc_rec_lgy](#calc_rec_lgy)
     - [calc_ppl_lgy_ddpm](#calc_ppl_lgy_ddpm)
     - [evaluation](#evaluation)
@@ -57,7 +57,7 @@ tr_loss / global_step: average loss
 optimizer: final optimizer
 ```
 
-## Evaluation
+## Evaluation_Functions
 
 The evaluation process contains two parts: reconstruction by `calc_rec_lgy` and generation by `calc_ppl_lgy_ddpm`.
 
