@@ -18,6 +18,7 @@ sitemap: false
 The training pipe line is writted in the function `train_vae_ddpm`. \
 The function can be imported by `from DMLP.train.train_function import train_vae_ddpm`
 
+```
 __Args__  
   local_rank: GPU device. This will be passed to the function automatically by CUDA_VISIBLE_DEVICE  
   world_size: the number of GPUs used
@@ -46,7 +47,7 @@ __Args__
   sent_length=32: sentence length for generation
   model_id='gpt2': model to evaluate sentence generation perplexity; gpt by default
   ppl_eval=True: evaluate perplexity or not
-
+```
 
 ### train_vae_ddpm
 
