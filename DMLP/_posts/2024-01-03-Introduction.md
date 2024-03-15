@@ -17,4 +17,4 @@ The Models module of DMLP comprises three key components: abstract VAE, abstract
 Additionally, we have incorporated JEDI versions of the VAE and DDPM models within DMLP. This feature enables swift adaptation to new tasks, providing users with pre-configured models that can be readily employed for their specific applications. This approach streamlines the process of leveraging state-of-the-art models while offering the flexibility needed for customization. 
 
 DMLP also provides a training and evaluation pipeline as the graph below indicated: \
-<img src="../../assets/img/training_pipeline.png" alt="training_pipeline" width="300" height="200">
+<img src="../../assets/img/training_pipeline.png" alt="training_pipeline" width="300" height="300">
