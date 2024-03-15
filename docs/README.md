@@ -21,8 +21,7 @@ This is the beginning of the documentation.
 
 ## Other
 * [LICENSE]{:.heading.flip-title} --- The license of this project.
-* [NOTICE]{:.heading.flip-title} --- Parts of this program are provided under separate licenses.
-* [CHANGELOG]{:.heading.flip-title} --- Version history of Hydejack.
+* [CHANGELOG]{:.heading.flip-title} --- Version history of DMLP.
 {:.related-posts.faded}
 
 [tutorial]: ../tutorial/index.md
@@ -31,5 +30,4 @@ This is the beginning of the documentation.
 [utils]: utils.md
 
 [LICENSE]: ../LICENSE.md
-[NOTICE]: ../NOTICE.md
 [CHANGELOG]: ../CHANGELOG.md

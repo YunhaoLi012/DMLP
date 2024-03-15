@@ -19,7 +19,7 @@ and usage.
     - [VAE_DDPM](#vae-ddpm)
     - [MLPSkipNet](#mlpskipnet)
 - [My Transformers](#my-transformer)
-
+    - [Model Class](#model-class)
 # Abstract Models
 We provide abstract model classes to serve as the backbone for text diffusion model. We built our default models
 upon these abstract classes. Users can also implement their own models with our abstract classes. Users can
@@ -206,3 +206,27 @@ __Variables__
 
 
 # My Transformers
+We provides 15 different transformers implementation as the options for VAE encoder/decoder. To access 
+all models, import ```MODEL_CLASS``` from ```DMLP.models.my_transformers```.
+
+### Model Class
+```
+MODEL_CLASS = {'BertForLatentConnector':BertForLatentConnector,
+               'BertForLatentConnectorAVG':BertForLatentConnectorAVG,
+               'BertForLatentConnectorNew':BertForLatentConnectorNew,
+               'RobertaForLatentConnector':RobertaForLatentConnector,
+               'RobertaForLatentConnectorNew':RobertaForLatentConnectorNew,
+               'DebertaForLatentConnector':DebertaForLatentConnector,
+               'DebertaForLatentConnectorNew':DebertaForLatentConnectorNew,
+               'T5EncoderForLatentConnector':T5EncoderForLatentConnector,
+               'GPT2ModelForVAE':GPT2ModelForVAE,
+               'GPT2ForLatentConnector':GPT2ForLatentConnector,
+               'GPT2ModelForVAENew':GPT2ModelForVAENew,
+               'GPT2ForLatentConnectorNew':GPT2ForLatentConnectorNew,
+               'GPT2ModelForVAENew2':GPT2ModelForVAENew2,
+               'GPT2ForLatentConnectorNew2':GPT2ForLatentConnectorNew2,
+               'AlbertForLatentConnector':AlbertForLatentConnector}
+```
+
+Our implementation based on 6 types of common used large language model: [BERT](https://huggingface.co/prajjwal1/bert-small), [RoBERTa](https://huggingface.co/docs/transformers/model_doc/roberta), [DeBERTa](https://huggingface.co/docs/transformers/en/model_doc/deberta), [T5](https://huggingface.co/docs/transformers/en/model_doc/t5), [GPT2](https://huggingface.co/openai-community/gpt2-xl), [ALBERT](https://huggingface.co/docs/transformers/en/model_doc/albert). Click 
+through the link to read about how to download each pretrained model. Examples also provided in [here](../tutorial/index.md)
