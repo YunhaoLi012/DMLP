@@ -18,3 +18,5 @@ Additionally, we have incorporated JEDI versions of the VAE and DDPM models with
 
 DMLP also provides a training and evaluation pipeline as the graph below indicated: \
 <img src="../../assets/img/training_pipeline.png" alt="training_pipeline" width="300" height="300">
+
+To sum up, using DMLP, a model with high generation and reconstruction quality is constructed. Applying diffusion models in text processing demonstrated promising capabilities in generating human-like text. This success opens the door to various future applications of the VAE-DDPM model, especially when combined with other methodologies. DMLP provides researchers with the essential components needed for exploring and advancing the capabilities of text diffusion models. It eases the research process by releasing researchers from the burden of coding, allowing them to focus on the development of their methods. 
