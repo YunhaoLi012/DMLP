@@ -3,12 +3,11 @@ from setuptools import setup, find_packages
 from pathlib import Path
 this_directory = Path(__file__).parent
 
-VERSION = '1.0.2' 
-DESCRIPTION = 'My first Python package'
+VERSION = '1.0.3' 
+DESCRIPTION = 'Diffusion Model Learning Package'
 LONG_DESCRIPTION = (this_directory / "README.md").read_text()
 
 setup(
-       # 名称必须匹配文件名 'verysimplemodule'
         name="DMLP", 
         version=VERSION,
         author="YunhaoLi, Jieqi Liu",
