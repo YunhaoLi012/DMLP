@@ -77,13 +77,13 @@ An example of usage can be found [here](https://github.com/YunhaoLi12138/DMLP/bl
 > ```Class DMLP.abstract_models.VAE_DDPM_Abs(model_vae, ddpm, ddpm_weight, *args, **kwargs) ```
 
 Base class for the complete VAE_DDPM structure model. Combine initialized VAE and DDPM and form a new VAE_DDPM object.
-
+```
 __Args__  
   model_vae: Initialized Variational Auto Encoder, should be a subclass of VAE_Abs  
   ddpm: Initialized DDPM, should be a subclass of DDPM_Abs
   ddpm_weight: hyperparameter $$\alpha$$ that adjust weight of ddpm loss in the total loss.  
   <div align="center"> $$\textbf{Loss} = \textbf{reconstruction loss} + \alpha \cdot \textbf{ddpm loss}$$</div>
-```
+
 from DMLP.models.abstract_models import VAE_DDPM_Abs
 
 class VAE_DDPM(VAE_DDPM_Abs):
@@ -189,9 +189,12 @@ __Variables__
 > __Return__:  
     All outputs from VAE and DDPM. For details check above description
 
-### MLPSKipNet
+### MLPSKipNet 
+(TransformerNet, LinearModel, ResidualLinear has similar inputs)
 > ```Class DMLP.models.models.MLPSkipNet(latent_dim)```  
-Implementation of MLP with skip connection. Neural network that mimic $$q_{\theta}$$ in the forward process.
+Implementation of MLP with skip connection. 
+Neural network that mimic $$q_{\theta}$$ in the forward process.
+
 __Args__  
   latent_dim: latent representation size
 
@@ -203,6 +206,7 @@ __Variables__
 
 > __Return__:  
   h: Latent space representation of generated text
+
 
 
 # My Transformers
