@@ -10,3 +10,5 @@ It provides:
 
 - APIs for constructing and training/fine-tuning text diffusion model 
 - Abstract classes for developing models in text diffusion
+
+![traing_pipeline](../assets/img/traing_pipeline.jpg)
