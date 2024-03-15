@@ -189,9 +189,11 @@ __Variables__
 > __Return__:  
     All outputs from VAE and DDPM. For details check above description
 
-### MLPSKipNet
+### MLPSKipNet (TransformerNet, LinearModel, ResidualLinear has similar inputs)
 > ```Class DMLP.models.models.MLPSkipNet(latent_dim)```  
-Implementation of MLP with skip connection. Neural network that mimic $$q_{\theta}$$ in the forward process.
+Implementation of MLP with skip connection. \
+Neural network that mimic $$q_{\theta}$$ in the forward process.
+
 __Args__  
   latent_dim: latent representation size
 
@@ -203,6 +205,7 @@ __Variables__
 
 > __Return__:  
   h: Latent space representation of generated text
+
 
 
 # My Transformers
