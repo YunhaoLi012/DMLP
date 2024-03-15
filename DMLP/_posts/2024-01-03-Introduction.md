@@ -11,4 +11,6 @@ It provides:
 - APIs for constructing and training/fine-tuning text diffusion model 
 - Abstract classes for developing models in text diffusion
 
+<img src="../../assets/img/dmlp_overview.png" alt="dmlp_overview" width="300" height="100">
+
 <img src="../../assets/img/training_pipeline.png" alt="training_pipeline" width="300" height="200">
