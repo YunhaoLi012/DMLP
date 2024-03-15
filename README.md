@@ -17,6 +17,7 @@ It provides:
 ```
 pip install DMLP
 ```
+Or you can git clone this github repository
 
 ## Tutorial
 The detailed tutorial can be found on website: https://yunhaoli12138.github.io/DMLP/tutorial/
