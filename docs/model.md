@@ -83,7 +83,7 @@ __Args__
   ddpm: Initialized DDPM, should be a subclass of DDPM_Abs
   ddpm_weight: hyperparameter $$\alpha$$ that adjust weight of ddpm loss in the total loss.  
   <div align="center"> $$\textbf{Loss} = \textbf{reconstruction loss} + \alpha \cdot \textbf{ddpm loss}$$</div>
-  
+
 from DMLP.models.abstract_models import VAE_DDPM_Abs
 
 class VAE_DDPM(VAE_DDPM_Abs):
@@ -189,7 +189,8 @@ __Variables__
 > __Return__:  
     All outputs from VAE and DDPM. For details check above description
 
-### MLPSKipNet (TransformerNet, LinearModel, ResidualLinear has similar inputs)
+### MLPSKipNet 
+(TransformerNet, LinearModel, ResidualLinear has similar inputs)
 > ```Class DMLP.models.models.MLPSkipNet(latent_dim)```  
 Implementation of MLP with skip connection. 
 Neural network that mimic $$q_{\theta}$$ in the forward process.
